@@ -3,12 +3,12 @@
   "version": "1.0.0",
   "description": "The Loom Documentation",
   "private": true,
-  "type": "module",
+  "type": "typescript",
   "dependencies": {
-    "@docusaurus/core": "^3.9.2",
-    "@docusaurus/preset-classic": "^3.9.2",
-    "react": "^19.2.0",
-    "react-dom": "^19.2.0"
+    "@docusaurus/core": "3.9.2",
+    "@docusaurus/preset-classic": "3.9.2",
+    "react": "19.2.0",
+    "react-dom": "19.2.0"
   },
   "scripts": {
     "start": "docusaurus start",

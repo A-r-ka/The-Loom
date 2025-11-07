@@ -36,11 +36,11 @@ const config: Config = {
         docs: {
           sidebarPath: require.resolve('./sidebars.ts'),
           routeBasePath: '/', // Docs na raiz
-          editUrl: 'https://github.com/your-username/the-loom/tree/main/docs/',
+          editUrl: 'https://github.com/a-r-ka/the-loom/tree/main/docs/',
         },
         blog: {
           showReadingTime: true,
-          editUrl: 'https://github.com/your-username/the-loom/tree/main/docs/',
+          editUrl: 'https://github.com/a-r-ka/the-loom/tree/main/docs/',
         },
         theme: {
           customCss: './src/css/custom.css',
@@ -66,18 +66,18 @@ const config: Config = {
           label: 'Docs',
         },
         {
-          to: '/api',
+          to: '/api/overview',
           label: 'API Reference',
           position: 'left'
         },
         {
-          to: '/smart-contracts',
+          to: '/smart-contracts/overview',
           label: 'Smart Contracts',
           position: 'left'
         },
         {to: '/blog', label: 'Blog', position: 'left'},
         {
-          href: 'https://github.com/your-username/the-loom',
+          href: 'https://github.com/a-r-ka/the-loom',
           label: 'GitHub',
           position: 'right',
         },
@@ -105,7 +105,7 @@ const config: Config = {
             },
             {
               label: 'Architecture',
-              to: '/architecture/overview',
+              to: '/getting-started/architecture/overview',
             },
           ],
         },
@@ -135,7 +135,7 @@ const config: Config = {
             },
             {
               label: 'GitHub',
-              href: 'https://github.com/your-username/the-loom',
+              href: 'https://github.com/a-r-ka/the-loom',
             },
             {
               label: 'Demo',

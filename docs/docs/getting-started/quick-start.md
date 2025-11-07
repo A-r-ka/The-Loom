@@ -128,7 +128,7 @@ Watch the progress bar update in real-time!
 
 ## Next Steps
 
-- 📖 [Learn about the Architecture](/architecture/overview)
+- 📖 [Learn about the Architecture](/getting-started/architecture/overview)
 - 🔗 [Deploy Smart Contracts](/smart-contracts/deployment)
 - ⚙️ [Setup Worker Node](/worker-node/setup)
 - 📡 [Explore API Endpoints](/api/overview)
