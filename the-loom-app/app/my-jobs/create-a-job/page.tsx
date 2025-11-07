@@ -1,10 +1,11 @@
 "use client";
 
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
 import MainSection from '../../components/MainSection';
 import '../../styles/create-a-job.css';
 import '../../styles/home.css';
+import { useAccount } from 'wagmi';
 
 export default function CreateAJobPage() {
   const router = useRouter();
@@ -121,18 +122,91 @@ export default function CreateAJobPage() {
   };
 
   const handleFinalSubmit = () => {
-    console.log('Final submission:', {
-      jobType: selectedJobType,
-      formData,
-      hardwareRequirements,
-      softwareRequirements,
-      budgetAssets
-    });
-    // Aqui você faria a submissão para o blockchain/backend
-    alert('Job submitted successfully!');
-    // Redireciona para a página my-jobs
-    router.push('/my-jobs');
+    // delega para o async submit handler
+    submitToServer();
   };
+
+  const { address, isConnected } = useAccount();
+  const [submitting, setSubmitting] = useState(false);
+  const [submitError, setSubmitError] = useState<string | null>(null);
+
+  // Map our internal job type ids to the API expected values
+  const mapJobType = (id: string) => {
+    switch (id) {
+      case 'ai':
+        return 'AI';
+      case '3d':
+      case '3D':
+        return '3D Rendering';
+      case 'data':
+        return 'Data Processing';
+      case 'video':
+        return 'Video Processing';
+      default:
+        return 'AI';
+    }
+  };
+
+  const submitToServer = async () => {
+    try {
+      setSubmitError(null);
+      setSubmitting(true);
+
+      const fd = new FormData();
+      fd.append('title', formData.title.trim());
+      fd.append('description', formData.description || '');
+      fd.append('type', mapJobType(selectedJobType));
+      fd.append('price', String(budgetAssets.budget || '0'));
+      // prefer connected wallet address when available
+      if (address) fd.append('wallet_address', address);
+      if (budgetAssets.assetsLink) fd.append('cloud_link', budgetAssets.assetsLink);
+
+      // external_links as an array (here we only include assetsLink if present)
+      const external = budgetAssets.assetsLink ? [budgetAssets.assetsLink] : [];
+      fd.append('external_links', JSON.stringify(external));
+
+      // attachment_info left blank for now
+      fd.append('attachment_info', '');
+
+      // Hardware
+      if (hardwareRequirements.cpu) fd.append('cpu', '1');
+      if (hardwareRequirements.gpu) fd.append('gpu', '1');
+      if (hardwareRequirements.minimumRam) fd.append('ram', String(hardwareRequirements.minimumRam));
+      if (hardwareRequirements.minimumVram) fd.append('vram', String(hardwareRequirements.minimumVram));
+
+      // Software
+      Object.entries(softwareRequirements).forEach(([key, val]) => {
+        if (val) fd.append(key, '1');
+      });
+
+      const res = await fetch('/api/projects', {
+        method: 'POST',
+        body: fd
+      });
+
+      const json = await res.json();
+      if (!res.ok || !json.success) {
+        setSubmitError(json?.error || 'Erro ao criar projeto');
+        setSubmitting(false);
+        return;
+      }
+
+      // success -> redirect to my-jobs
+      router.push('/my-jobs');
+    } catch (err: any) {
+      console.error('submit error', err);
+      setSubmitError(err?.message || 'Erro inesperado');
+    } finally {
+      setSubmitting(false);
+    }
+  };
+
+  // If the wallet becomes disconnected while on this page, redirect to home
+  useEffect(() => {
+    if (typeof isConnected !== 'undefined' && !isConnected) {
+      router.push('/');
+    }
+  }, [isConnected, router]);
 
   const handleBack = () => {
     if (currentStep > 1) {
@@ -491,7 +565,7 @@ export default function CreateAJobPage() {
               <button 
                 className="btn-submit"
                 onClick={handleNext}
-                disabled={!budgetAssets.budget || !budgetAssets.assetsLink}
+                disabled={!budgetAssets.budget || !budgetAssets.assetsLink || submitting}
               >
                 Review & Submit
               </button>
@@ -620,10 +694,16 @@ export default function CreateAJobPage() {
               <button 
                 className="btn-final-submit"
                 onClick={handleNext}
+                disabled={submitting}
               >
-                Review & Submit
+                {submitting ? 'Submitting...' : 'Submit Job'}
               </button>
             </div>
+            {submitError && (
+              <div className="submit-error" style={{ marginTop: 12, color: 'var(--danger, #ff4d4f)' }}>
+                {submitError}
+              </div>
+            )}
           </>
         )}
       </div>

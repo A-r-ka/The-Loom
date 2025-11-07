@@ -121,6 +121,10 @@ body {
   top: 100px;
 }
 
+.job-link {
+  text-decoration: none;
+}
+
 .filter-section {
   margin-bottom: 1.5rem;
 }
