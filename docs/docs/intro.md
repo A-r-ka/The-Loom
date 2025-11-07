@@ -1,6 +1,6 @@
 # Welcome to The Loom
 
-![The Loom Banner](../static/img/banner.png)
+![The Loom Banner](/img/banner.png)
 
 :::tip Live Demo
 Try the live application at [the-loom.vercel.app](https://the-loom.vercel.app)

@@ -1,14 +1,33 @@
-'use client'
+"use client";
 
-import '../styles/marketplace.css'
+import React, { useState } from 'react';
+import MainSection from '../components/MainSection';
+import '../styles/marketplace.css';
+import '../styles/home.css';
 
-export default function Marketplace() {
+export default function MarketplacePage() {
+  const [searchTerm, setSearchTerm] = useState('')
+  const [selectedCategory, setSelectedCategory] = useState('All')
+  const [minEth, setMinEth] = useState('')
+  const [maxEth, setMaxEth] = useState('')
+  const [cpuChecked, setCpuChecked] = useState(false)
+  const [gpuChecked, setGpuChecked] = useState(false)
+  const [vram, setVram] = useState('12GB')
+
+  const categories = [
+    'All',
+    'AI / Machine Learning',
+    '3D Rendering',
+    'Physics Simulation',
+    'Video Processing'
+  ]
+
   const jobs = [
     {
       id: 1,
       title: 'AI Model Training: Object Detection V2',
       description: 'Seeking for a provider to train a YOLOV8 model...',
-      tags: 'Tags: AI / ML, Pytorch, GPU',
+      tags: 'AI / ML, Pytorch, GPU',
       price: '$100.00',
       posted: 'Posted 2 Hours ago'
     },
@@ -16,7 +35,7 @@ export default function Marketplace() {
       id: 2,
       title: '3D Render: Sci-Fi Cityscape',
       description: 'High Poly architecture futuristic rendering',
-      tags: 'Tags: 3D Rendering, Blender, VRAM >= 12GB',
+      tags: '3D Rendering, Blender, VRAM >= 12GB',
       price: '$275.00',
       posted: 'Posted 5 Hours ago'
     },
@@ -24,7 +43,7 @@ export default function Marketplace() {
       id: 3,
       title: 'Architectural Visualization',
       description: 'Render high-resolution images and a short animation...',
-      tags: 'Tags: 3D Rendering | Blender | VRAM 12GB+',
+      tags: '3D Rendering | Blender | VRAM 12GB+',
       price: '$100.00',
       posted: 'Posted 2 Hours ago'
     },
@@ -32,7 +51,7 @@ export default function Marketplace() {
       id: 4,
       title: 'Video Processing: Drone Footage Stabilization',
       description: 'Stabilize approximately 2 hours of 4K drone footage shot',
-      tags: 'Tags: Video Processing | FFmpeg | GPU',
+      tags: 'Video Processing | FFmpeg | GPU',
       price: '$27.00',
       posted: 'Posted 2 Hours ago'
     },
@@ -40,7 +59,7 @@ export default function Marketplace() {
       id: 5,
       title: 'Natural Language Processing - Sentiment Analysis',
       description: 'Seeking for a provider to train a YOLOV8 model...',
-      tags: 'Tags: AI / ML, Pytorch, GPU',
+      tags: 'AI / ML, Pytorch, GPU',
       price: '$450.00',
       posted: 'Posted 2 Hours ago'
     },
@@ -48,393 +67,132 @@ export default function Marketplace() {
       id: 6,
       title: 'AI Model Training: Object Detection V2',
       description: 'Seeking for a provider to train a YOLOV8 model...',
-      tags: 'Tags: AI / ML, Pytorch, GPU',
+      tags: 'AI / ML, Pytorch, GPU',
       price: '$500.00',
       posted: 'Posted 2 Hours ago'
     }
   ]
 
   return (
-    <div className="marketplace-container">
-      <style dangerouslySetInnerHTML={{__html: 'html body { background: rgb(0, 0, 0); }'}} />
-      
-      <div id="main">
-        <div className="framer-DswEt framer-72rtr7" style={{ minHeight: '100vh', width: 'auto' }}>
-          
-          {/* Header Section */}
-          <div className="framer-125z3mo" data-framer-name="Project Overview">
-            <div className="framer-m8of2" data-framer-name="Component 1">
+    <div className="marketplace-page">
+      {/* Header */}
+      <MainSection />
+
+      <div className="marketplace-container">
+        <div className="content-wrapper">
+          {/* Sidebar com Filtros */}
+          <aside className="sidebar">
+            <div className="filter-section">
+              <h3 className="filter-title">Project Categories</h3>
+              <div className="categories-list">
+                {categories.map((category) => (
+                  <button
+                    key={category}
+                    className={`category-btn ${selectedCategory === category ? 'active' : ''}`}
+                    onClick={() => setSelectedCategory(category)}
+                  >
+                    {category}
+                  </button>
+                ))}
+              </div>
+            </div>
+
+            <div className="divider"></div>
+
+            <div className="filter-section">
+              <h3 className="filter-title">Filters</h3>
               
-              {/* Logo */}
-              <div className="framer-37xoak" data-framer-name="The Loom" data-framer-component-type="RichTextContainer" style={{ justifyContent: 'center', transform: 'none' }}>
-                <p className="framer-text" style={{
-                  fontFamily: '"Poppins", "Poppins Placeholder", sans-serif',
-                  fontSize: '30px',
-                  fontWeight: 700,
-                  textAlign: 'center',
-                  color: 'rgb(255, 255, 255)'
-                }}>
-                  The Loom
-                </p>
-              </div>
-
-              {/* Navigation Menu */}
-              <div className="framer-1r2ec80" data-framer-name="Frame 2">
-                <div className="framer-1m9n3ft" data-framer-name="Download" data-framer-component-type="RichTextContainer" style={{ justifyContent: 'center', transform: 'none' }}>
-                  <p className="framer-text" style={{
-                    fontFamily: '"Montserrat", "Montserrat Placeholder", sans-serif',
-                    fontWeight: 300,
-                    textAlign: 'center',
-                    color: 'rgb(255, 255, 255)'
-                  }}>
-                    Download
-                  </p>
-                </div>
-
-                <div className="framer-8ibtpi" data-framer-name="Post a job" data-framer-component-type="RichTextContainer" style={{ justifyContent: 'center', transform: 'none' }}>
-                  <p className="framer-text" style={{
-                    fontFamily: '"Montserrat", "Montserrat Placeholder", sans-serif',
-                    fontWeight: 300,
-                    textAlign: 'center',
-                    color: 'rgb(255, 255, 255)'
-                  }}>
-                    Post a job
-                  </p>
-                </div>
-
-                <div className="framer-1yfxi" data-framer-name="Explore Jobs" data-framer-component-type="RichTextContainer" style={{ justifyContent: 'center', transform: 'none' }}>
-                  <p className="framer-text" style={{
-                    fontFamily: '"Montserrat", "Montserrat Placeholder", sans-serif',
-                    fontWeight: 300,
-                    textAlign: 'center',
-                    color: 'rgb(255, 255, 255)'
-                  }}>
-                    Explore Jobs
-                  </p>
-                </div>
-
-                {/* Connect Wallet Button */}
-                <div className="framer-1bjicjk" data-border="true" data-framer-name="Frame 1">
-                  <div className="framer-7xm8sy" data-framer-name="Connect Wallet" data-framer-component-type="RichTextContainer" style={{ justifyContent: 'center', transform: 'none' }}>
-                    <p className="framer-text" style={{
-                      fontFamily: '"Montserrat", "Montserrat Placeholder", sans-serif',
-                      fontWeight: 300,
-                      textAlign: 'center'
-                    }}>
-                      Connect Wallet
-                    </p>
-                  </div>
+              <div className="filter-group">
+                <label className="filter-label">Reward</label>
+                <div className="eth-inputs">
+                  <input
+                    type="text"
+                    placeholder="Min ETH"
+                    className="eth-input"
+                    value={minEth}
+                    onChange={(e) => setMinEth(e.target.value)}
+                  />
+                  <input
+                    type="text"
+                    placeholder="Max ETH"
+                    className="eth-input"
+                    value={maxEth}
+                    onChange={(e) => setMaxEth(e.target.value)}
+                  />
                 </div>
               </div>
 
-              <div className="framer-2wl2u3" data-framer-name="Rectangle 1"></div>
+              <div className="filter-group">
+                <div className="checkbox-group">
+                  <label className="checkbox-label">
+                    <input
+                      type="checkbox"
+                      checked={cpuChecked}
+                      onChange={(e) => setCpuChecked(e.target.checked)}
+                    />
+                    <span>CPU</span>
+                  </label>
+                  <label className="checkbox-label">
+                    <input
+                      type="checkbox"
+                      checked={gpuChecked}
+                      onChange={(e) => setGpuChecked(e.target.checked)}
+                    />
+                    <span>GPU</span>
+                  </label>
+                </div>
+              </div>
+
+              <div className="filter-group">
+                <label className="filter-label">
+                  VRAM: <span className="vram-value">{vram}</span>
+                </label>
+              </div>
             </div>
+          </aside>
 
+          {/* Main Content */}
+          <main className="main-content">
             {/* Search Bar */}
-            <div className="framer-1f4rsde" data-framer-name="Group 21">
-              <div className="framer-1cnhyi9" data-border="true" data-framer-name="Frame 1">
-                <div className="framer-1t1xuab" data-framer-name="Search keywords" data-framer-component-type="RichTextContainer" style={{ justifyContent: 'center', transform: 'none' }}>
-                  <p className="framer-text" style={{
-                    fontFamily: '"Montserrat", "Montserrat Placeholder", sans-serif',
-                    fontWeight: 300,
-                    color: 'rgb(255, 255, 255)'
-                  }}>
-                    Search keywords
-                  </p>
-                </div>
-              </div>
-            </div>
-
-            {/* Filters Section */}
-            <div className="framer-1a3hkde" data-border="true" data-framer-name="Frame 13">
-              <div className="framer-aghk5x" data-framer-name="Project Categories" data-framer-component-type="RichTextContainer" style={{ justifyContent: 'center', transform: 'none' }}>
-                <p className="framer-text" style={{
-                  fontFamily: '"Montserrat", "Montserrat Placeholder", sans-serif',
-                  textAlign: 'center',
-                  color: 'rgb(255, 255, 255)'
-                }}>
-                  Project Categories
-                </p>
-              </div>
-
-              <div className="framer-sgfw90" data-framer-name="Filters" data-framer-component-type="RichTextContainer" style={{ justifyContent: 'center', transform: 'translateX(-50%)' }}>
-                <p className="framer-text" style={{
-                  fontFamily: '"Montserrat", "Montserrat Placeholder", sans-serif',
-                  textAlign: 'center',
-                  color: 'rgb(255, 255, 255)'
-                }}>
-                  Filters
-                </p>
-              </div>
-
-              {/* Categories */}
-              <div className="framer-bgrla2" data-framer-name="Group 6">
-                <div className="framer-cmeyx9" data-framer-name="All" data-framer-component-type="RichTextContainer" style={{ justifyContent: 'center', transform: 'none' }}>
-                  <p className="framer-text" style={{
-                    fontFamily: '"Montserrat", "Montserrat Placeholder", sans-serif',
-                    fontWeight: 300,
-                    color: 'rgb(255, 255, 255)'
-                  }}>
-                    All
-                  </p>
-                </div>
-
-                <div className="framer-1281ud8" data-framer-name="AI / Machine Learning" data-framer-component-type="RichTextContainer" style={{ justifyContent: 'center', transform: 'none' }}>
-                  <p className="framer-text" style={{
-                    fontFamily: '"Montserrat", "Montserrat Placeholder", sans-serif',
-                    fontWeight: 300,
-                    color: 'rgb(255, 255, 255)'
-                  }}>
-                    AI / Machine Learning
-                  </p>
-                </div>
-
-                <div className="framer-7m8qxl" data-framer-name="3D Rendering" data-framer-component-type="RichTextContainer" style={{ justifyContent: 'center', transform: 'none' }}>
-                  <p className="framer-text" style={{
-                    fontFamily: '"Montserrat", "Montserrat Placeholder", sans-serif',
-                    fontWeight: 300,
-                    color: 'rgb(255, 255, 255)'
-                  }}>
-                    3D Rendering
-                  </p>
-                </div>
-
-                <div className="framer-1cmw2d6" data-framer-name="Physics Simulation" data-framer-component-type="RichTextContainer" style={{ justifyContent: 'center', transform: 'none' }}>
-                  <p className="framer-text" style={{
-                    fontFamily: '"Montserrat", "Montserrat Placeholder", sans-serif',
-                    fontWeight: 300,
-                    color: 'rgb(255, 255, 255)'
-                  }}>
-                    Physics Simulation
-                  </p>
-                </div>
-
-                <div className="framer-1ozwu6q" data-framer-name="Video Processing" data-framer-component-type="RichTextContainer" style={{ justifyContent: 'center', transform: 'none' }}>
-                  <p className="framer-text" style={{
-                    fontFamily: '"Montserrat", "Montserrat Placeholder", sans-serif',
-                    fontWeight: 300,
-                    color: 'rgb(255, 255, 255)'
-                  }}>
-                    Video Processing
-                  </p>
-                </div>
-              </div>
-
-              {/* Reward Filter */}
-              <div className="framer-1htwiiy" data-framer-name="Reward" data-framer-component-type="RichTextContainer" style={{ justifyContent: 'center', transform: 'none' }}>
-                <p className="framer-text" style={{
-                  fontFamily: '"Montserrat", "Montserrat Placeholder", sans-serif',
-                  fontWeight: 300,
-                  color: 'rgb(255, 255, 255)'
-                }}>
-                  Reward
-                </p>
-              </div>
-
-              {/* VRAM Filter */}
-              <div className="framer-1qqkw4" data-framer-name="Group 18">
-                <div className="framer-ivdk3w" data-framer-name="VRAM:" data-framer-component-type="RichTextContainer" style={{ justifyContent: 'center', transform: 'none' }}>
-                  <p className="framer-text" style={{
-                    fontFamily: '"Montserrat", "Montserrat Placeholder", sans-serif',
-                    fontWeight: 300,
-                    color: 'rgb(255, 255, 255)'
-                  }}>
-                    VRAM:{' '}
-                  </p>
-                </div>
-                <div className="framer-1crdyll" data-framer-name="12GB" data-framer-component-type="RichTextContainer" style={{ justifyContent: 'center', transform: 'none' }}>
-                  <p className="framer-text" style={{
-                    fontFamily: '"Montserrat", "Montserrat Placeholder", sans-serif',
-                    fontSize: '12px',
-                    fontWeight: 300,
-                    color: 'rgb(136, 136, 136)'
-                  }}>
-                    12GB
-                  </p>
-                </div>
-              </div>
-
-              {/* Min/Max ETH Inputs */}
-              <div className="framer-xx793w" data-framer-name="Group 8">
-                <div className="framer-13hvs3z" data-border="true" data-framer-name="Rectangle 10"></div>
-                <div className="framer-1c78ojr" data-framer-name="Min ETH" data-framer-component-type="RichTextContainer" style={{ justifyContent: 'center', transform: 'none' }}>
-                  <p className="framer-text" style={{
-                    fontFamily: '"Montserrat", "Montserrat Placeholder", sans-serif',
-                    fontSize: '10px',
-                    fontWeight: 300,
-                    textAlign: 'center',
-                    color: 'rgba(255, 255, 255, 0.75)'
-                  }}>
-                    Min ETH
-                  </p>
-                </div>
-              </div>
-
-              <div className="framer-16ilaj" data-framer-name="Group 9">
-                <div className="framer-1ikcnas" data-border="true" data-framer-name="Rectangle 11"></div>
-                <div className="framer-zqqh7u" data-framer-name="Max ETH" data-framer-component-type="RichTextContainer" style={{ justifyContent: 'center', transform: 'none' }}>
-                  <p className="framer-text" style={{
-                    fontFamily: '"Montserrat", "Montserrat Placeholder", sans-serif',
-                    fontSize: '10px',
-                    fontWeight: 300,
-                    textAlign: 'center',
-                    color: 'rgba(255, 255, 255, 0.75)'
-                  }}>
-                    Max ETH
-                  </p>
-                </div>
-              </div>
-
-              {/* Divider Line */}
-              <div data-framer-component-type="SVG" data-framer-name="Line 19" className="framer-nrluqo" aria-hidden="true" style={{ imageRendering: 'pixelated', flexShrink: 0, fill: 'rgb(0, 0, 0)', color: 'rgb(0, 0, 0)' }}>
-                <div className="svgContainer" style={{ width: '100%', height: '100%', aspectRatio: 'inherit' }}>
-                  <svg style={{width:'100%',height:'100%'}} viewBox="0 0 36 3" preserveAspectRatio="none" width="100%" height="100%">
-                    <path d="M 0 1.5 L 36 1.5" fill="transparent" strokeWidth="1" stroke="rgb(255, 255, 255)" strokeOpacity="0.2"></path>
-                  </svg>
-                </div>
-              </div>
-
-              {/* CPU Checkbox */}
-              <div className="framer-12i30s7" data-framer-name="Group 19">
-                <div className="framer-uhkgi1" data-framer-name="CPU" data-framer-component-type="RichTextContainer" style={{ justifyContent: 'center', transform: 'none' }}>
-                  <p className="framer-text" style={{
-                    fontFamily: '"Montserrat", "Montserrat Placeholder", sans-serif',
-                    fontWeight: 300,
-                    color: 'rgb(255, 255, 255)'
-                  }}>
-                    CPU
-                  </p>
-                </div>
-                <div data-framer-component-type="SVG" data-framer-name="Frame" className="framer-pff81o" aria-hidden="true" style={{ imageRendering: 'pixelated', flexShrink: 0, fill: 'rgb(0, 0, 0)', color: 'rgb(0, 0, 0)' }}>
-                  <div className="svgContainer" style={{ width: '100%', height: '100%', aspectRatio: 'inherit' }}>
-                    <svg style={{width:'100%',height:'100%'}} viewBox="0 0 24 24" preserveAspectRatio="none" width="100%" height="100%">
-                      <rect width="24" height="24" fill="transparent" stroke="rgb(255, 255, 255)" strokeWidth="1" strokeOpacity="0.3" rx="4"></rect>
-                    </svg>
-                  </div>
-                </div>
-              </div>
-
-              {/* GPU Checkbox */}
-              <div className="framer-3ifyp4" data-framer-name="Group 20">
-                <div className="framer-u75fnc" data-framer-name="GPU" data-framer-component-type="RichTextContainer" style={{ justifyContent: 'center', transform: 'none' }}>
-                  <p className="framer-text" style={{
-                    fontFamily: '"Montserrat", "Montserrat Placeholder", sans-serif',
-                    fontWeight: 300,
-                    color: 'rgb(255, 255, 255)'
-                  }}>
-                    GPU{' '}
-                  </p>
-                </div>
-                <div data-framer-component-type="SVG" data-framer-name="Frame" className="framer-1oor2m0" aria-hidden="true" style={{ imageRendering: 'pixelated', flexShrink: 0, fill: 'rgb(0, 0, 0)', color: 'rgb(0, 0, 0)' }}>
-                  <div className="svgContainer" style={{ width: '100%', height: '100%', aspectRatio: 'inherit' }}>
-                    <svg style={{width:'100%',height:'100%'}} viewBox="0 0 24 24" preserveAspectRatio="none" width="100%" height="100%">
-                      <rect width="24" height="24" fill="transparent" stroke="rgb(255, 255, 255)" strokeWidth="1" strokeOpacity="0.3" rx="4"></rect>
-                    </svg>
-                  </div>
-                </div>
-              </div>
-
-              {/* Another Divider Line */}
-              <div data-framer-component-type="SVG" data-framer-name="Line 20" className="framer-1hep7hx" aria-hidden="true" style={{ imageRendering: 'pixelated', flexShrink: 0, fill: 'rgb(0, 0, 0)', color: 'rgb(0, 0, 0)' }}>
-                <div className="svgContainer" style={{ width: '100%', height: '100%', aspectRatio: 'inherit' }}>
-                  <svg style={{width:'100%',height:'100%'}} viewBox="0 0 33 3" preserveAspectRatio="none" width="100%" height="100%">
-                    <path d="M 0 1.5 L 33 1.5" fill="transparent" strokeWidth="1" stroke="rgb(255, 255, 255)" strokeOpacity="0.2"></path>
-                  </svg>
-                </div>
-              </div>
-            </div>
-
-            {/* Main Divider */}
-            <div data-framer-component-type="SVG" data-framer-name="Line 18" className="framer-1nx8p1u" aria-hidden="true" style={{ imageRendering: 'pixelated', flexShrink: 0, fill: 'rgb(0, 0, 0)', color: 'rgb(0, 0, 0)' }}>
-              <div className="svgContainer" style={{ width: '100%', height: '100%', aspectRatio: 'inherit' }}>
-                <svg style={{width:'100%',height:'100%'}} viewBox="0 0 185 4" preserveAspectRatio="none" width="100%" height="100%">
-                  <path d="M 0 2 L 185 2" fill="transparent" strokeWidth="2" stroke="rgb(255, 255, 255)" strokeOpacity="0.15"></path>
+            <div className="search-section">
+              <div className="search-bar">
+                <svg className="search-icon" width="20" height="20" viewBox="0 0 20 20" fill="none">
+                  <path d="M9 17A8 8 0 1 0 9 1a8 8 0 0 0 0 16zM19 19l-4.35-4.35" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
                 </svg>
+                <input
+                  type="text"
+                  placeholder="Search keywords"
+                  className="search-input"
+                  value={searchTerm}
+                  onChange={(e) => setSearchTerm(e.target.value)}
+                />
               </div>
             </div>
 
-            {/* Available Jobs Title */}
-            <div className="framer-sz3c7q" data-framer-name="Available Jobs" data-framer-component-type="RichTextContainer" style={{ justifyContent: 'center', transform: 'translateX(-50%)' }}>
-              <p className="framer-text" style={{
-                fontFamily: '"Montserrat", "Montserrat Placeholder", sans-serif',
-                fontSize: '32px',
-                fontWeight: 600,
-                letterSpacing: '0.05em',
-                color: 'rgb(255, 255, 255)'
-              }}>
-                Available Jobs
-              </p>
+            {/* Jobs Title */}
+            <h2 className="jobs-title">Available Jobs</h2>
+
+            {/* Jobs List */}
+            <div className="jobs-list">
+              {jobs.map((job) => (
+                <article key={job.id} className="job-card">
+                  <div className="job-content">
+                    <div className="job-header">
+                      <h3 className="job-title">{job.title}</h3>
+                      <div className="job-price">{job.price}</div>
+                    </div>
+                    
+                    <p className="job-tags">Tags: {job.tags}</p>
+                    <p className="job-description">{job.description}</p>
+                    
+                    <div className="job-footer">
+                      <span className="job-posted">{job.posted}</span>
+                    </div>
+                  </div>
+                </article>
+              ))}
             </div>
-
-            {/* Job Listings */}
-            {jobs.map((job, index) => (
-              <div key={job.id} className={`framer-${index === 0 ? '1fmj4rk' : index === 1 ? 'luzwuj' : index === 2 ? 'tg5kek' : index === 3 ? '1bsj2sm' : index === 4 ? '1dfk703' : 'sywcin'}`} data-framer-name={`Group ${12 + index}`}>
-                {/* Job Divider */}
-                <div data-framer-component-type="SVG" data-framer-name="Line 19" className="framer-1fuvfx4" aria-hidden="true" style={{ imageRendering: 'pixelated', flexShrink: 0, fill: 'rgb(0, 0, 0)', color: 'rgb(0, 0, 0)' }}>
-                  <div className="svgContainer" style={{ width: '100%', height: '100%', aspectRatio: 'inherit' }}>
-                    <svg style={{width:'100%',height:'100%'}} viewBox="0 0 897 3" preserveAspectRatio="none" width="100%" height="100%">
-                      <path d="M 0 1.5 L 897 1.5" fill="transparent" strokeWidth="1" stroke="rgb(255, 255, 255)" strokeOpacity="0.1"></path>
-                    </svg>
-                  </div>
-                </div>
-
-                {/* Job Details */}
-                <div className="framer-1b09xdw" data-framer-name="Group 10">
-                  <div className="framer-sv7c8l" data-framer-name="Tags" data-framer-component-type="RichTextContainer" style={{ justifyContent: 'center', transform: 'none' }}>
-                    <p className="framer-text" style={{
-                      fontFamily: '"Montserrat", "Montserrat Placeholder", sans-serif',
-                      fontWeight: 300,
-                      color: 'rgb(255, 255, 255)'
-                    }}>
-                      {job.tags}
-                    </p>
-                  </div>
-
-                  <div className="framer-hld31y" data-framer-name="Description" data-framer-component-type="RichTextContainer" style={{ justifyContent: 'center', transform: 'none' }}>
-                    <p className="framer-text" style={{
-                      fontFamily: '"Montserrat", "Montserrat Placeholder", sans-serif',
-                      fontWeight: 300,
-                      color: 'rgb(255, 255, 255)'
-                    }}>
-                      {job.description}
-                    </p>
-                  </div>
-
-                  <div className="framer-j1phhn" data-framer-name="Title" data-framer-component-type="RichTextContainer" style={{ justifyContent: 'center', transform: 'translateX(-50%)' }}>
-                    <p className="framer-text" style={{
-                      fontFamily: '"Montserrat", "Montserrat Placeholder", sans-serif',
-                      fontSize: '24px',
-                      letterSpacing: '0.05em',
-                      color: 'rgb(255, 255, 255)'
-                    }}>
-                      {job.title}
-                    </p>
-                  </div>
-                </div>
-
-                {/* Job Footer */}
-                <div className="framer-dnk489" data-framer-name="Group 11">
-                  <div className="framer-1k6rl8v" data-framer-name="Posted" data-framer-component-type="RichTextContainer" style={{ justifyContent: 'center', transform: 'none' }}>
-                    <p className="framer-text" style={{ color: 'rgb(136, 136, 136)' }}>
-                      {job.posted}
-                    </p>
-                  </div>
-
-                  <div className="framer-rg030a" data-framer-name="Price" data-framer-component-type="RichTextContainer" style={{ justifyContent: 'center', transform: 'translateX(-50%)' }}>
-                    <p className="framer-text" style={{
-                      fontFamily: '"Montserrat", "Montserrat Placeholder", sans-serif',
-                      fontSize: '24px',
-                      fontWeight: 600,
-                      letterSpacing: '0.05em',
-                      color: 'rgb(255, 255, 255)'
-                    }}>
-                      {job.price}
-                    </p>
-                  </div>
-                </div>
-              </div>
-            ))}
-          </div>
+          </main>
         </div>
       </div>
     </div>

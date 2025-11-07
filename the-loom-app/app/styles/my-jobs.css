@@ -1,0 +1,419 @@
+/* My Jobs/Projects Page - Design Fiel à Imagem */
+
+/* Fonts */
+@import url('https://fonts.googleapis.com/css2?family=Montserrat:wght@300;400;500;600;700&display=swap');
+
+:root {
+  --bg-primary: #000000;
+  --bg-secondary: #0a0a0a;
+  --bg-card: #d4d4d4;
+  --border-color: #222222;
+  --text-primary: #ffffff;
+  --text-secondary: #888888;
+  --text-dark: #000000;
+  --accent-green: #00ff00;
+  --sidebar-width: 224px;
+}
+
+.my-jobs-page {
+  min-height: 100vh;
+  background: var(--bg-primary);
+  display: flex;
+  flex-direction: column;
+}
+
+/* Layout Principal */
+.my-jobs-container {
+  display: flex;
+  flex: 1;
+  max-width: 1400px;
+  margin: 0 auto;
+  padding: 0 2rem;
+}
+
+/* Sidebar */
+.my-jobs-sidebar {
+  width: var(--sidebar-width);
+  background: var(--bg-primary);
+  border-right: 1px solid var(--border-color);
+  display: flex;
+  flex-direction: column;
+  padding: 2rem 0;
+  position: fixed;
+  height: calc(100vh - 80px);
+  top: 80px;
+  left: calc((100vw - 1400px) / 2);
+}
+
+.sidebar-avatar {
+  width: 100px;
+  height: 100px;
+  border-radius: 50%;
+  background: var(--bg-card);
+  margin: 0 auto 3rem;
+}
+
+.sidebar-nav {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  padding: 0 1.5rem;
+}
+
+.sidebar-nav-item {
+  padding: 0.75rem 1rem;
+  color: var(--text-primary);
+  text-decoration: none;
+  font-size: 1rem;
+  font-weight: 400;
+  font-family: 'Montserrat', sans-serif;
+  transition: all 0.2s;
+  border-radius: 4px;
+  margin-bottom: 0.5rem;
+  cursor: pointer;
+  background: transparent;
+  border: none;
+  text-align: left;
+  display: block;
+}
+
+.sidebar-nav-item:hover {
+  background: rgba(255, 255, 255, 0.05);
+}
+
+.sidebar-nav-item.active {
+  border-left: 3px solid var(--accent-green);
+  padding-left: calc(1rem - 3px);
+  font-weight: 500;
+}
+
+.sidebar-logout {
+  padding: 0 2.5rem;
+  margin-top: auto;
+}
+
+.logout-btn {
+  color: var(--text-primary);
+  text-decoration: none;
+  font-size: 1rem;
+  font-weight: 400;
+  font-family: 'Montserrat', sans-serif;
+  background: transparent;
+  border: none;
+  cursor: pointer;
+  padding: 0;
+  transition: opacity 0.2s;
+}
+
+.logout-btn:hover {
+  opacity: 0.7;
+}
+
+/* Main Content */
+.my-jobs-main {
+  flex: 1;
+  margin-left: var(--sidebar-width);
+  padding: 3rem 2rem 3rem 3rem;
+  max-width: calc(1400px - 224px);
+}
+
+.projects-header {
+  margin-bottom: 2rem;
+}
+
+.projects-title {
+  font-size: 2.5rem;
+  font-weight: 600;
+  letter-spacing: 0.05em;
+  color: var(--text-primary);
+  margin-bottom: 2rem;
+  font-family: 'Montserrat', sans-serif;
+}
+
+.projects-controls {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 2.5rem;
+}
+
+.projects-tabs {
+  display: flex;
+  gap: 2rem;
+}
+
+.tab-btn {
+  background: transparent;
+  border: none;
+  color: var(--text-primary);
+  font-size: 1rem;
+  font-weight: 400;
+  font-family: 'Montserrat', sans-serif;
+  cursor: pointer;
+  padding: 0.5rem 0;
+  transition: all 0.2s;
+  position: relative;
+}
+
+.tab-btn:hover {
+  opacity: 0.7;
+}
+
+.tab-btn.active {
+  font-weight: 500;
+}
+
+.tab-btn.active::after {
+  content: '';
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  height: 2px;
+  background: var(--text-primary);
+}
+
+.create-job-btn {
+  background: var(--text-primary);
+  color: var(--bg-primary);
+  border: none;
+  padding: 0.75rem 2rem;
+  border-radius: 6px;
+  font-size: 1rem;
+  font-weight: 500;
+  font-family: 'Montserrat', sans-serif;
+  cursor: pointer;
+  transition: all 0.2s;
+  text-decoration: none;
+}
+
+.create-job-btn:hover {
+  background: var(--text-secondary);
+  color: var(--text-primary);
+}
+
+/* Projects Grid */
+.projects-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 2rem;
+}
+
+.project-card {
+  background: var(--bg-primary);
+  border: 1px solid var(--border-color);
+  border-radius: 12px;
+  overflow: hidden;
+  cursor: pointer;
+  transition: all 0.2s;
+}
+
+.project-card:hover {
+  border-color: var(--text-secondary);
+  transform: translateY(-4px);
+}
+
+.project-image {
+  width: 100%;
+  aspect-ratio: 1;
+  background: var(--bg-card);
+  border-bottom: 1px solid var(--border-color);
+}
+
+.project-info {
+  padding: 1.5rem;
+}
+
+.project-card-title {
+  font-size: 1.25rem;
+  font-weight: 500;
+  color: var(--text-primary);
+  font-family: 'Montserrat', sans-serif;
+  letter-spacing: 0.02em;
+}
+
+/* Responsividade */
+
+/* Tablet Large */
+@media (max-width: 1200px) {
+  .my-jobs-container {
+    max-width: 100%;
+    padding: 0 1.5rem;
+  }
+
+  .my-jobs-sidebar {
+    left: 1.5rem;
+  }
+
+  .my-jobs-main {
+    padding: 2.5rem 2rem;
+    max-width: 100%;
+  }
+
+  .projects-grid {
+    grid-template-columns: repeat(2, 1fr);
+    gap: 1.5rem;
+  }
+}
+
+/* Tablet */
+@media (max-width: 1024px) {
+  .my-jobs-container {
+    padding: 0 1rem;
+  }
+
+  .my-jobs-sidebar {
+    width: 180px;
+    left: 1rem;
+  }
+
+  .my-jobs-main {
+    margin-left: 180px;
+    padding: 2rem 1.5rem;
+  }
+
+  .sidebar-avatar {
+    width: 80px;
+    height: 80px;
+  }
+
+  .projects-title {
+    font-size: 2rem;
+  }
+
+  .projects-controls {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 1.5rem;
+  }
+
+  .projects-tabs {
+    gap: 1.5rem;
+  }
+}
+
+/* Mobile */
+@media (max-width: 768px) {
+  .my-jobs-sidebar {
+    position: fixed;
+    left: -100%;
+    width: 240px;
+    height: 100vh;
+    top: 0;
+    z-index: 1000;
+    transition: left 0.3s;
+    border-right: 1px solid var(--border-color);
+  }
+
+  .my-jobs-sidebar.open {
+    left: 0;
+  }
+
+  .my-jobs-main {
+    margin-left: 0;
+    padding: 1.5rem;
+  }
+
+  .projects-title {
+    font-size: 1.75rem;
+  }
+
+  .projects-tabs {
+    gap: 1rem;
+    flex-wrap: wrap;
+  }
+
+  .tab-btn {
+    font-size: 0.9rem;
+  }
+
+  .create-job-btn {
+    width: 100%;
+    padding: 0.75rem 1.5rem;
+  }
+
+  .projects-grid {
+    grid-template-columns: 1fr;
+    gap: 1.5rem;
+  }
+
+  .sidebar-nav {
+    padding: 0 1rem;
+  }
+
+  .sidebar-logout {
+    padding: 0 2rem;
+  }
+}
+
+/* Mobile Small */
+@media (max-width: 480px) {
+  .my-jobs-main {
+    padding: 1rem;
+  }
+
+  .projects-title {
+    font-size: 1.5rem;
+    margin-bottom: 1.5rem;
+  }
+
+  .projects-controls {
+    gap: 1rem;
+  }
+
+  .tab-btn {
+    font-size: 0.85rem;
+  }
+
+  .create-job-btn {
+    font-size: 0.9rem;
+    padding: 0.65rem 1.25rem;
+  }
+
+  .project-card-title {
+    font-size: 1.1rem;
+  }
+
+  .project-info {
+    padding: 1.25rem;
+  }
+}
+
+/* Overlay para mobile */
+.sidebar-overlay {
+  display: none;
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: rgba(0, 0, 0, 0.7);
+  z-index: 999;
+}
+
+@media (max-width: 768px) {
+  .sidebar-overlay.open {
+    display: block;
+  }
+}
+
+/* Menu Toggle Button (Mobile) */
+.menu-toggle {
+  display: none;
+  position: fixed;
+  top: 1rem;
+  left: 1rem;
+  z-index: 1001;
+  background: var(--bg-primary);
+  border: 1px solid var(--border-color);
+  border-radius: 6px;
+  padding: 0.5rem;
+  cursor: pointer;
+  color: var(--text-primary);
+}
+
+@media (max-width: 768px) {
+  .menu-toggle {
+    display: block;
+  }
+}

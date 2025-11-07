@@ -14,8 +14,8 @@ export default function MainSection() {
           <Link href="/download" className="nav-link">
             Download
           </Link>
-          <Link href="/post-job" className="nav-link">
-            Post a job
+          <Link href="/my-jobs" className="nav-link">
+            My Jobs
           </Link>
           <Link href="/marketplace" className="nav-link">
             Explore Jobs

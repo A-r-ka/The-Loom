@@ -1,30 +1,33 @@
 {
   "name": "docs",
   "version": "1.0.0",
-  "description": "This website is built using [Docusaurus](https://docusaurus.io/), a modern static website generator.",
-  "main": "index.js",
-  "directories": {
-    "doc": "docs"
-  },
-  "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
-  },
-  "repository": {
-    "type": "git",
-    "url": "git+https://github.com/a-r-ka/the-loom.git"
-  },
-  "keywords": [],
-  "author": "",
-  "license": "ISC",
-  "type": "commonjs",
-  "bugs": {
-    "url": "https://github.com/a-r-ka/the-loom/issues"
-  },
-  "homepage": "https://github.com/a-r-ka/the-loom#readme",
+  "description": "The Loom Documentation",
+  "private": true,
+  "type": "module",
   "dependencies": {
     "@docusaurus/core": "^3.9.2",
     "@docusaurus/preset-classic": "^3.9.2",
     "react": "^19.2.0",
     "react-dom": "^19.2.0"
+  },
+  "scripts": {
+    "start": "docusaurus start",
+    "build": "docusaurus build",
+    "swizzle": "docusaurus swizzle",
+    "deploy": "docusaurus deploy",
+    "clear": "docusaurus clear",
+    "serve": "docusaurus serve"
+  },
+  "browserslist": {
+    "production": [
+      ">0.5%",
+      "not dead",
+      "not op_mini all"
+    ],
+    "development": [
+      "last 3 chrome version",
+      "last 3 firefox version",
+      "last 3 safari version"
+    ]
   }
 }
