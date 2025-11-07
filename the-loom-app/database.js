@@ -10,7 +10,7 @@ const seedDatabase = (db) => {
     {
       title: 'Treinamento de Modelo CNN (Demo)',
       description: 'Treinamento de rede neural para classificação de imagens médicas.',
-      type: 'IA',
+      type: 'AI',
       price: 2.5,
       wallet_address: '0x1234567890123456789012345678901234567890',
       status: 'PENDING',
@@ -22,8 +22,8 @@ const seedDatabase = (db) => {
     {
       title: 'Renderização 3D - Arquitetura (Demo)',
       description: 'Renderização fotorrealística de projeto arquitetônico.',
-      type: 'GRAFICA',
-      price: 0.8,
+      type: '3D Rendering',
+      price: 3.0,
       wallet_address: '0xabcdef123456789012345678901234567890abcd',
       status: 'PENDING',
       progress: 0,
@@ -34,7 +34,7 @@ const seedDatabase = (db) => {
     {
       title: 'Fine-tuning GPT (Demo)',
       description: 'Ajuste fino de modelo de linguagem para análise de sentimentos.',
-      type: 'IA',
+      type: 'Data Simulation',
       price: 1.2,
       wallet_address: '0xfedcba0987654321098765432109876543210fed',
       status: 'PENDING',
@@ -70,10 +70,11 @@ const db = new verboseSqlite.Database(DB_FILE, (err) => {
     db.run(`CREATE TABLE IF NOT EXISTS projects (
       id INTEGER PRIMARY KEY AUTOINCREMENT,
       title TEXT NOT NULL, 
-      description TEXT,
-      type TEXT NOT NULL CHECK(type IN ('IA', 'GRAFICA')),
       price REAL NOT NULL,
+      description TEXT,
+      type TEXT NOT NULL CHECK(type IN ('AI', '3D Rendering', 'Data Simulation', 'Video Processing')),
       wallet_address TEXT,
+      wallet_address_secondary TEXT,
       status TEXT DEFAULT 'PENDING' NOT NULL,
       progress INTEGER DEFAULT 0 NOT NULL,
       created_at DATETIME DEFAULT CURRENT_TIMESTAMP,
@@ -82,7 +83,25 @@ const db = new verboseSqlite.Database(DB_FILE, (err) => {
       cloud_link TEXT,
       script_path TEXT,
       external_links TEXT, -- Armazenado como JSON string
-      attachment_info TEXT
+      attachment_info TEXT,
+
+      -- Requisitos de hardware e software --
+      cpu BOOLEAN DEFAULT 0,
+      gpu BOOLEAN DEFAULT 0,
+      ram INTEGER,
+      vram INTEGER,
+
+      vray BOOLEAN DEFAULT 0,
+      openfoam BOOLEAN DEFAULT 0,
+      bullet BOOLEAN DEFAULT 0,
+      python BOOLEAN DEFAULT 0,
+      compileProject BOOLEAN DEFAULT 0,
+      blender BOOLEAN DEFAULT 0,
+      octane BOOLEAN DEFAULT 0,
+      autoDesk3DMax BOOLEAN DEFAULT 0,
+      zbrush BOOLEAN DEFAULT 0
+      
+
     )`);
 
     // Passo 2: Verificar se a tabela está vazia e popular (Substitui o seed.ts)

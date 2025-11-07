@@ -47,6 +47,8 @@ export default function MarketplacePage() {
             tags: Array.isArray(p.external_links) ? p.external_links.join(' | ') : p.type || '',
             price: typeof p.price === 'number' ? `$${p.price.toFixed(2)}` : (p.price || '$0.00'),
             posted: p.created_at ? `Posted ${new Date(p.created_at).toLocaleString()}` : 'Posted recently',
+            wallet_address: p.wallet_address, // Include wallet_address for job creator check
+            wallet_address_secondary: p.wallet_address_secondary || '', // secondary address if any
             raw: p
           }));
 

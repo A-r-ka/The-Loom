@@ -8,7 +8,7 @@ interface Project {
   id: number;
   title: string;
   description: string;
-  type: 'IA' | 'GRAFICA';
+  type: 'AI' | '3D Rendering' | 'Data Processing' | 'Video Processing' | string;
   price: number;
   wallet_address: string;
   status: 'PENDING' | 'WORKING' | 'COMPLETED';
@@ -18,6 +18,20 @@ interface Project {
   script_path?: string;
   external_links?: string; // Vem como string do DB
   attachment_info?: string;
+  // hardware / software requirements (optionals)
+  cpu?: number;
+  gpu?: number;
+  ram?: number;
+  vram?: number;
+  vray?: number;
+  openfoam?: number;
+  bullet?: number;
+  python?: number;
+  compileProject?: number;
+  blender?: number;
+  octane?: number;
+  autoDesk3DMax?: number;
+  zbrush?: number;
 }
 
 const isValidWalletAddress = (address: string) => /^0x[a-fA-F0-9]{40}$/.test(address);
@@ -56,7 +70,7 @@ export async function POST(request: Request) {
     
     const title = data.get('title') as string;
     const description = data.get('description') as string;
-    const type = data.get('type') as 'IA' | 'GRAFICA';
+    const type = data.get('type') as 'AI' | '3D Rendering' | 'Data Processing' | 'Video Processing';
     const price = parseFloat(data.get('price') as string);
     const wallet_address = data.get('wallet_address') as string;
     const cloud_link = data.get('cloud_link') as string;
@@ -65,6 +79,23 @@ export async function POST(request: Request) {
     const external_links = externalLinksStr ? JSON.parse(externalLinksStr as string) : [];
     const attachment_info = data.get('attachment_info') as string;
     
+    // Hardware requirements
+    const cpu = !!data.get('cpu') ? 1 : 0;
+    const gpu = !!data.get('gpu') ? 1 : 0;
+    const ram = data.get('ram') ? parseInt(data.get('ram') as string, 10) : null;
+    const vram = data.get('vram') ? parseInt(data.get('vram') as string, 10) : null;
+
+    // Software requirements (checkboxes)
+    const vray = !!data.get('vray') ? 1 : 0;
+    const openfoam = !!data.get('openfoam') ? 1 : 0;
+    const bullet = !!data.get('bullet') ? 1 : 0;
+    const pythonReq = !!data.get('python') ? 1 : 0;
+    const compileProject = !!data.get('compileProject') ? 1 : 0;
+    const blender = !!data.get('blender') ? 1 : 0;
+    const octane = !!data.get('octane') ? 1 : 0;
+    const autoDesk3DMax = !!data.get('autoDesk3DMax') ? 1 : 0;
+    const zbrush = !!data.get('zbrush') ? 1 : 0;
+    
     const file = data.get('script_file') as File | null;
 
     // Validações
@@ -72,8 +103,8 @@ export async function POST(request: Request) {
       return NextResponse.json({ success: false, error: 'Campos obrigatórios faltando' }, { status: 400 });
     }
 
-    if (type !== 'IA' && type !== 'GRAFICA') {
-      return NextResponse.json({ success: false, error: 'Tipo inválido. Use "IA" ou "GRAFICA"' }, { status: 400 });
+    if (type !== 'AI' && type !== '3D Rendering' && type !== 'Data Processing' && type !== 'Video Processing') {
+      return NextResponse.json({ success: false, error: 'Tipo inválido. Use "AI", "3D Rendering", "Data Processing" ou "Video Processing"' }, { status: 400 });
     }
 
     if (wallet_address && !isValidWalletAddress(wallet_address)) {
@@ -101,12 +132,16 @@ export async function POST(request: Request) {
     }
 
     const now = new Date().toISOString();
+
+    // Insert all known columns (including new ones) — use NULL for missing optional values
     const result: any = await runQuery(
       `INSERT INTO projects (
         title, description, type, price, wallet_address,
         status, progress, created_at, cloud_link, script_path,
-        external_links, attachment_info
-      ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`,
+        external_links, attachment_info,
+        cpu, gpu, ram, vram,
+        vray, openfoam, bullet, python, compileProject, blender, octane, autoDesk3DMax, zbrush
+      ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`,
       [
         title.trim(),
         description || '',
@@ -119,7 +154,20 @@ export async function POST(request: Request) {
         cloud_link || null,
         scriptPath,
         JSON.stringify(external_links),
-        attachment_info || null
+        attachment_info || null,
+        cpu,
+        gpu,
+        ram,
+        vram,
+        vray,
+        openfoam,
+        bullet,
+        pythonReq,
+        compileProject,
+        blender,
+        octane,
+        autoDesk3DMax,
+        zbrush
       ]
     );
 
