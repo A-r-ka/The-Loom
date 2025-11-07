@@ -23,8 +23,8 @@ export default function DoAJobPage() {
   const [acceptError, setAcceptError] = useState<string | null>(null);
 
   // Check if the current user is the job creator
-  const isMyJob = currentJobData && address && 
-    currentJobData.wallet_address === address;
+  const isMyJob = (currentJobData && address && 
+    currentJobData.wallet_address === address) || !address;
 
   // Get actual project data (either from currentJobData.raw or currentJobData itself)
   const projectData = currentJobData?.raw || currentJobData;

@@ -277,26 +277,26 @@ export default function MyJobsPage() {
 
               {/* Description */}
               <div className="modal-section">
-                <h3 className="modal-section-title">Descrição</h3>
-                <p className="modal-text">{selectedProject.description || 'Sem descrição'}</p>
+                    <h3 className="modal-section-title">Description</h3>
+                <p className="modal-text">{selectedProject.description || 'No description'}</p>
               </div>
 
               {/* Type and Price */}
               <div className="modal-section modal-grid">
                 <div>
-                  <h3 className="modal-section-title">Tipo</h3>
+                  <h3 className="modal-section-title">Type</h3>
                   <p className="modal-text">{selectedProject.type}</p>
                 </div>
                 <div>
-                  <h3 className="modal-section-title">Orçamento</h3>
-                  <p className="modal-text">${selectedProject.price} USD</p>
+                  <h3 className="modal-section-title">Budget</h3>
+                  <p className="modal-text">${selectedProject.price} ETH</p>
                 </div>
               </div>
 
               {/* Progress */}
               {selectedProject.status === 'WORKING' && (
                 <div className="modal-section">
-                  <h3 className="modal-section-title">Progresso</h3>
+                  <h3 className="modal-section-title">Working</h3>
                   <div className="progress-bar">
                     <div 
                       className="progress-fill"
@@ -304,7 +304,7 @@ export default function MyJobsPage() {
                     ></div>
                   </div>
                   <p className="modal-text" style={{ marginTop: '8px', fontSize: '14px' }}>
-                    {selectedProject.progress || 0}% completo
+                    {selectedProject.progress || 0}% Complete
                   </p>
                 </div>
               )}
@@ -312,7 +312,7 @@ export default function MyJobsPage() {
               {/* Hardware Requirements */}
               {(selectedProject.cpu || selectedProject.gpu) && (
                 <div className="modal-section">
-                  <h3 className="modal-section-title">Requisitos de Hardware</h3>
+                    <h3 className="modal-section-title">Hardware Requirements</h3>
                   <div className="requirements-tags">
                     {selectedProject.cpu === 1 && <span className="req-tag">CPU</span>}
                     {selectedProject.gpu === 1 && <span className="req-tag">GPU</span>}
@@ -374,7 +374,7 @@ export default function MyJobsPage() {
 
               {/* Created Date */}
               <div className="modal-section">
-                <h3 className="modal-section-title">Criado em</h3>
+                <h3 className="modal-section-title">Created At</h3>
                 <p className="modal-text">
                   {new Date(selectedProject.created_at).toLocaleDateString('pt-BR', {
                     day: '2-digit',
@@ -393,7 +393,7 @@ export default function MyJobsPage() {
                 onClick={handleDeleteProject}
                 disabled={deleting}
               >
-                {deleting ? 'Deletando...' : 'Deletar Projeto'}
+                {deleting ? 'Deleting...' : 'Delete Project'}
               </button>
               <button 
                 className="btn-close-modal"
