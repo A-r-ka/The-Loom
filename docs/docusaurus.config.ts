@@ -1,4 +1,4 @@
-// @ts-check
+// @tws-check
 import {themes as prismThemes} from 'prism-react-renderer';
 import type {Config} from '@docusaurus/types';
 import type * as Preset from '@docusaurus/preset-classic';
@@ -17,11 +17,16 @@ const config: Config = {
   projectName: 'the-loom', // Nome do repo
 
   onBrokenLinks: 'throw',
-  onBrokenMarkdownLinks: 'warn',
 
   i18n: {
     defaultLocale: 'pt-BR',
     locales: ['pt-BR', 'en'],
+  },
+
+  markdown: {
+    hooks: {
+      onBrokenMarkdownLinks: 'warn',
+    },
   },
 
   presets: [
@@ -29,7 +34,7 @@ const config: Config = {
       'classic',
       {
         docs: {
-          sidebarPath: './sidebars.ts',
+          sidebarPath: require.resolve('./sidebars.ts'),
           routeBasePath: '/', // Docs na raiz
           editUrl: 'https://github.com/your-username/the-loom/tree/main/docs/',
         },

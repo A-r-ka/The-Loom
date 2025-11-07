@@ -21,7 +21,7 @@ const sidebars: SidebarsConfig = {
       type: 'category',
       label: '🏗️ Architecture',
       items: [
-        'getting-started/architecture/overview', // Nota: este arquivo existe!
+        'architecture/overview', // Nota: este arquivo existe!
         'architecture/frontend',
         'architecture/backend',
         'architecture/database',
