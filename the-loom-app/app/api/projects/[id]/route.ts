@@ -35,10 +35,11 @@ export async function PUT(request: Request, context: any) {
     const type = body.type !== undefined ? body.type : project.type;
     const price = body.price !== undefined ? Number(body.price) : project.price;
     const wallet_address = body.wallet_address !== undefined ? body.wallet_address : project.wallet_address;
+    const wallet_address_secondary = body.wallet_address_secondary !== undefined ? body.wallet_address_secondary : project.wallet_address_secondary;
     const status = body.status !== undefined ? body.status : project.status;
     const progress = body.progress !== undefined ? Number(body.progress) : project.progress;
 
-    if (type && !['IA', 'GRAFICA'].includes(type)) {
+    if (type && !['AI', '3D Rendering', 'Data Simulation', 'Video Processing'].includes(type)) {
       return NextResponse.json({ success: false, error: 'Tipo inválido' }, { status: 400 });
     }
     if (price !== undefined && (isNaN(price) || price <= 0)) {
@@ -49,8 +50,8 @@ export async function PUT(request: Request, context: any) {
     }
 
     const result: any = await runQuery(
-      `UPDATE projects SET title = ?, description = ?, type = ?, price = ?, wallet_address = ?, status = ?, progress = ? WHERE id = ?`,
-      [title, description, type, price, wallet_address, status, progress, id]
+      `UPDATE projects SET title = ?, description = ?, type = ?, price = ?, wallet_address = ?, wallet_address_secondary = ?, status = ?, progress = ? WHERE id = ?`,
+      [title, description, type, price, wallet_address, wallet_address_secondary, status, progress, id]
     );
 
     if (result.changes === 0) {
