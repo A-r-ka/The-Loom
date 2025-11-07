@@ -1,105 +1,98 @@
-# Executa o job em paralelo para cada plataforma na matriz
-runs-on: ${{ matrix.os }}
+name: Build executável com PyInstaller
 
-# A "matriz de estratégia" define as combinações de SO e Python
-strategy:
-  matrix:
-    os: [ubuntu-latest, macos-latest, windows-latest]
-    python-version: ['3.10'] # Especifique a versão do Python que você usa
+on:
+  push:
+    branches: [ main ]
+  release:
+    types: [created]
+  workflow_dispatch:
 
-steps:
-# Etapa 1: Faz o checkout do seu código no repositório
-- name: 'Checkout code'
-  uses: actions/checkout@v4
+jobs:
+  build:
+    # Executa o job em paralelo para cada plataforma na matriz
+    runs-on: ${{ matrix.os }}
 
-# Etapa 2: Configura o ambiente Python
-- name: 'Set up Python'
-  uses: actions/setup-python@v5
-  with:
-    python-version: ${{ matrix.python-version }}
-    cache: 'pip' # Habilita o cache para o pip para acelerar instalações futuras
+    # A "matriz de estratégia" define as combinações de SO e Python
+    strategy:
+      matrix:
+        os: [ubuntu-latest, macos-latest, windows-latest]
+        python-version: ['3.10'] # Especifique a versão do Python que você usa
 
-# Etapa 3: Instala as dependências (PyInstaller e as do seu projeto)
-- name: 'Install dependencies'
-  run: |
-    python -m pip install --upgrade pip
-    pip install pyinstaller
-    # Se você tiver um arquivo requirements.txt, descomente a linha abaixo:
-    # pip install -r requirements.txt
+    steps:
+      # Etapa 1: Faz o checkout do seu código no repositório
+      - name: 'Checkout code'
+        uses: actions/checkout@v4
 
-# Etapa 4: Define nomes de arquivos e caminhos específicos da plataforma
-- name: 'Set platform-specific names'
-  shell: bash
-  run: |
-    # 1. ESTE É O CAMINHO RELATIVO PARA O SEU SCRIPT
-    SCRIPT_PATH="desktop/worker_app.py"
-    
-    # Pega apenas o nome do arquivo (ex: worker_app.py) do caminho
-    SCRIPT_FILENAME=$(basename $SCRIPT_PATH)
-    
-    # Pega o nome do app sem a extensão (ex: worker_app)
-    APP_NAME=$(echo $SCRIPT_FILENAME | cut -f 1 -d '.')
-    
-    # Define nomes diferentes para Windows
-    if [ "$RUNNER_OS" == "Windows" ]; then
-      echo "EXECUTABLE_NAME=${APP_NAME}.exe" >> $GITHUB_ENV
-      echo "ZIP_NAME=${APP_NAME}-windows.zip" >> $GITHUB_ENV
-    elif [ "$RUNNER_OS" == "macOS" ]; then
-      echo "EXECUTABLE_NAME=${APP_NAME}" >> $GITHUB_ENV
-      echo "ZIP_NAME=${APP_NAME}-macos.zip" >> $GITHUB_ENV
-    else
-      echo "EXECUTABLE_NAME=${APP_NAME}" >> $GITHUB_ENV
-      echo "ZIP_NAME=${APP_NAME}-linux.zip" >> $GITHUB_ENV
-    fi
-    
-    # Passa o SCRIPT_PATH para a próxima etapa
-    echo "SCRIPT_PATH=${SCRIPT_PATH}" >> $GITHUB_ENV
+      # Etapa 2: Configura o ambiente Python
+      - name: 'Set up Python'
+        uses: actions/setup-python@v5
+        with:
+          python-version: ${{ matrix.python-version }}
+          cache: 'pip'
 
-# Etapa 5: Executa o PyInstaller
-- name: 'Run PyInstaller'
-  run: |
-    # 2. USA A VARIÁVEL SCRIPT_PATH AQUI
-    if [ "$RUNNER_OS" == "Windows" ]; then
-      pyinstaller --onefile --windowed --name="${{ env.EXECUTABLE_NAME }}" ${{ env.SCRIPT_PATH }}
-    else
-      pyinstaller --onefile --noconsole --name="${{ env.EXECUTABLE_NAME }}" ${{ env.SCRIPT_PATH }}
-    fi
+      # Etapa 3: Instala as dependências
+      - name: 'Install dependencies'
+        run: |
+          python -m pip install --upgrade pip
+          pip install pyinstaller
+          # Se você tiver um arquivo requirements.txt:
+          # pip install -r requirements.txt
 
-# Etapa 6: Compacta o executável (comandos diferentes para Windows)
-- name: 'Zip the executable (Windows)'
-  if: runner.os == 'Windows'
-  # O PyInstaller coloca o executável no diretório 'dist/'
-  run: Compress-Archive -Path dist/${{ env.EXECUTABLE_NAME }} -DestinationPath ${{ env.ZIP_NAME }}
+      # Etapa 4: Define nomes de arquivos e caminhos específicos da plataforma
+      - name: 'Set platform-specific names'
+        shell: bash
+        run: |
+          SCRIPT_PATH="desktop/worker_app.py"
+          SCRIPT_FILENAME=$(basename $SCRIPT_PATH)
+          APP_NAME=$(echo $SCRIPT_FILENAME | cut -f 1 -d '.')
+          
+          if [ "$RUNNER_OS" == "Windows" ]; then
+            echo "EXECUTABLE_NAME=${APP_NAME}.exe" >> $GITHUB_ENV
+            echo "ZIP_NAME=${APP_NAME}-windows.zip" >> $GITHUB_ENV
+          elif [ "$RUNNER_OS" == "macOS" ]; then
+            echo "EXECUTABLE_NAME=${APP_NAME}" >> $GITHUB_ENV
+            echo "ZIP_NAME=${APP_NAME}-macos.zip" >> $GITHUB_ENV
+          else
+            echo "EXECUTABLE_NAME=${APP_NAME}" >> $GITHUB_ENV
+            echo "ZIP_NAME=${APP_NAME}-linux.zip" >> $GITHUB_ENV
+          fi
+          
+          echo "SCRIPT_PATH=${SCRIPT_PATH}" >> $GITHUB_ENV
 
-- name: 'Zip the executable (Linux/macOS)'
-  if: runner.os != 'Windows'
-  run: zip ${{ env.ZIP_NAME }} dist/${{ env.EXECUTABLE_NAME }}
+      # Etapa 5: Executa o PyInstaller
+      - name: 'Run PyInstaller'
+        run: |
+          if [ "$RUNNER_OS" == "Windows" ]; then
+            pyinstaller --onefile --windowed --name="${{ env.EXECUTABLE_NAME }}" ${{ env.SCRIPT_PATH }}
+          else
+            pyinstaller --onefile --noconsole --name="${{ env.EXECUTABLE_NAME }}" ${{ env.SCRIPT_PATH }}
+          fi
 
-# Etapa 7: Anexa o .zip à Release (SE for uma Release)
-- name: 'Upload artifact to Release (Production)'
-  # Esta etapa SÓ roda se o gatilho for uma 'release'
-  if: github.event_name == 'release'
-  uses: actions/upload-release-asset@v1
-  env:
-    # Este token é criado automaticamente pelo GitHub
-    GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-  with:
-    # Pega a URL de upload da "release" que acionou este workflow
-    upload_url: ${{ github.event.release.upload_url }}
-    # O caminho do arquivo .zip que queremos anexar
-    asset_path: ./${{ env.ZIP_NAME }}
-    # O nome do arquivo como ele aparecerá na release
-    asset_name: ${{ env.ZIP_NAME }}
-    # O tipo de conteúdo do arquivo
-    asset_content_type: application/zip
+      # Etapa 6: Compacta o executável
+      - name: 'Zip the executable (Windows)'
+        if: runner.os == 'Windows'
+        run: Compress-Archive -Path dist/${{ env.EXECUTABLE_NAME }} -DestinationPath ${{ env.ZIP_NAME }}
 
-# Etapa 8: Salva o .zip como Artefato (SE for um teste manual)
-- name: 'Upload artifact for testing (Development)'
-  # Esta etapa SÓ roda se o gatilho NÃO for uma 'release' (ex: workflow_dispatch)
-  if: github.event_name != 'release'
-  uses: actions/upload-artifact@v4
-  with:
-    # O nome do artefato (será o nome do zip)
-    name: ${{ env.ZIP_NAME }}
-    # O caminho do arquivo a ser salvo
-    path: ./${{ env.ZIP_NAME }}
+      - name: 'Zip the executable (Linux/macOS)'
+        if: runner.os != 'Windows'
+        run: zip ${{ env.ZIP_NAME }} dist/${{ env.EXECUTABLE_NAME }}
+
+      # Etapa 7: Upload na release (produção)
+      - name: 'Upload artifact to Release (Production)'
+        if: github.event_name == 'release'
+        uses: actions/upload-release-asset@v1
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        with:
+          upload_url: ${{ github.event.release.upload_url }}
+          asset_path: ./${{ env.ZIP_NAME }}
+          asset_name: ${{ env.ZIP_NAME }}
+          asset_content_type: application/zip
+
+      # Etapa 8: Upload de artefato para testes
+      - name: 'Upload artifact for testing (Development)'
+        if: github.event_name != 'release'
+        uses: actions/upload-artifact@v4
+        with:
+          name: ${{ env.ZIP_NAME }}
+          path: ./${{ env.ZIP_NAME }}
