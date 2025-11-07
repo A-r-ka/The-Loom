@@ -1,6 +1,7 @@
 "use client";
 
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
+import Link from 'next/link'; 
 import MainSection from '../components/MainSection';
 import '../styles/marketplace.css';
 import '../styles/home.css';
@@ -22,56 +23,51 @@ export default function MarketplacePage() {
     'Video Processing'
   ]
 
-  const jobs = [
-    {
-      id: 1,
-      title: 'AI Model Training: Object Detection V2',
-      description: 'Seeking for a provider to train a YOLOV8 model...',
-      tags: 'AI / ML, Pytorch, GPU',
-      price: '$100.00',
-      posted: 'Posted 2 Hours ago'
-    },
-    {
-      id: 2,
-      title: '3D Render: Sci-Fi Cityscape',
-      description: 'High Poly architecture futuristic rendering',
-      tags: '3D Rendering, Blender, VRAM >= 12GB',
-      price: '$275.00',
-      posted: 'Posted 5 Hours ago'
-    },
-    {
-      id: 3,
-      title: 'Architectural Visualization',
-      description: 'Render high-resolution images and a short animation...',
-      tags: '3D Rendering | Blender | VRAM 12GB+',
-      price: '$100.00',
-      posted: 'Posted 2 Hours ago'
-    },
-    {
-      id: 4,
-      title: 'Video Processing: Drone Footage Stabilization',
-      description: 'Stabilize approximately 2 hours of 4K drone footage shot',
-      tags: 'Video Processing | FFmpeg | GPU',
-      price: '$27.00',
-      posted: 'Posted 2 Hours ago'
-    },
-    {
-      id: 5,
-      title: 'Natural Language Processing - Sentiment Analysis',
-      description: 'Seeking for a provider to train a YOLOV8 model...',
-      tags: 'AI / ML, Pytorch, GPU',
-      price: '$450.00',
-      posted: 'Posted 2 Hours ago'
-    },
-    {
-      id: 6,
-      title: 'AI Model Training: Object Detection V2',
-      description: 'Seeking for a provider to train a YOLOV8 model...',
-      tags: 'AI / ML, Pytorch, GPU',
-      price: '$500.00',
-      posted: 'Posted 2 Hours ago'
+  const [jobs, setJobs] = useState<any[]>([]);
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState<string | null>(null);
+
+  useEffect(() => {
+    let mounted = true;
+    async function loadProjects() {
+      setLoading(true);
+      setError(null);
+      try {
+        const res = await fetch('/api/projects');
+        if (!res.ok) throw new Error(`HTTP ${res.status}`);
+        const data = await res.json();
+        if (!mounted) return;
+
+        if (data && data.success && Array.isArray(data.projects)) {
+          // Map backend project shape to UI-friendly shape
+          const mapped = data.projects.map((p: any) => ({
+            id: p.id,
+            title: p.title || 'Untitled project',
+            description: p.description || '',
+            tags: Array.isArray(p.external_links) ? p.external_links.join(' | ') : p.type || '',
+            price: typeof p.price === 'number' ? `$${p.price.toFixed(2)}` : (p.price || '$0.00'),
+            posted: p.created_at ? `Posted ${new Date(p.created_at).toLocaleString()}` : 'Posted recently',
+            raw: p
+          }));
+
+          setJobs(mapped);
+        } else if (data && data.success && data.project) {
+          // single inserted project
+          setJobs([data.project]);
+        } else {
+          setJobs([]);
+        }
+      } catch (err: any) {
+        console.error('Failed to load projects', err);
+        setError(err.message || 'Erro ao carregar projetos');
+      } finally {
+        if (mounted) setLoading(false);
+      }
     }
-  ]
+
+    loadProjects();
+    return () => { mounted = false };
+  }, []);
 
   return (
     <div className="marketplace-page">
@@ -178,10 +174,11 @@ export default function MarketplacePage() {
                 <article key={job.id} className="job-card">
                   <div className="job-content">
                     <div className="job-header">
-                      <h3 className="job-title">{job.title}</h3>
+                      <Link className="job-link" href={{ pathname: '/marketplace/do-a-job', query: { job: JSON.stringify(job) } }}>
+                        <h3 className="job-title">{job.title}</h3>
+                      </Link>
                       <div className="job-price">{job.price}</div>
                     </div>
-                    
                     <p className="job-tags">Tags: {job.tags}</p>
                     <p className="job-description">{job.description}</p>
                     

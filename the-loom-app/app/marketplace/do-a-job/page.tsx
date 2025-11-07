@@ -4,8 +4,13 @@ import React from 'react';
 import MainSection from '../../components/MainSection';
 import '../../styles/do-a-job.css';
 import '../../styles/home.css';
+import { useSearchParams } from 'next/navigation';
 
 export default function DoAJobPage() {
+  const router = useSearchParams();
+  const job = router.get('job');
+  const jobData = job ? JSON.parse(job as string) : null;
+
   return (
     <div className="do-a-job-page">
       <MainSection />
@@ -22,7 +27,7 @@ export default function DoAJobPage() {
         {/* Project Header */}
         <div className="project-header">
           <div className="project-title-section">
-            <h1 className="project-main-title">Project Title</h1>
+            <h1 className="project-main-title">{jobData ? jobData.title : 'Project Title'}</h1>
             <span className="status-badge">Active</span>
           </div>
           
@@ -43,7 +48,7 @@ export default function DoAJobPage() {
           <h2 className="section-title">Description</h2>
           <div className="section-content">
             <p>
-              Lorem ipsum dolor sit amet, consectetur adipiscing elit. Nunc hendrerit orci tellus, quis commodo erat sed molestie vestibulum. Suspendisse auctor tristique nibh at porta. Fusce sit vitam vitae arcu egestas pellentesque. In tellus dolor, ultricies quis purus ex lobortis sit amet. Curabitur lorem felis, blandit nec ornare vitae hendrerit. Donec sollicitudin sit amet consequat, vel dignissim ipsum venenatis. Quisque venenatis in ligula id tristique. Donec ac lectus lacus, natus gravida a efficitur a sodales lobortis. Donec ex blandit non non. Pellentesque lacus tempor, consectetur gravida turpis in ligula et nisl cursus. Donec vulputate, libero vitae adipiscing dignissim, magna magna posuere.
+              {jobData ? jobData.description : 'Lorem ipsum dolor sit amet...'}
             </p>
           </div>
         </div>
@@ -52,7 +57,7 @@ export default function DoAJobPage() {
         <div className="project-section">
           <h2 className="section-title">Budget</h2>
           <div className="budget-section">
-            <div className="budget-amount">$3000.00</div>
+            <div className="budget-amount">{jobData ? jobData.price : '$3000.00'}</div>
             <div className="budget-meta">
               <div className="budget-meta-item">
                 <span className="budget-meta-label">Estimated Time:</span>
