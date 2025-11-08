@@ -8,7 +8,7 @@ import MainSection from '../components/MainSection';
 import '../styles/my-jobs.css';
 import '../styles/home.css';
 
-const backendUrl = "http://elon.local:3001";
+const backendUrl = "https://loom-backend-api.onrender.com";
 
 export default function MyJobsPage() {
   const { isConnected, address } = useAccount();

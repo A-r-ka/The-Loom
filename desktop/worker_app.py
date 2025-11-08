@@ -9,7 +9,7 @@ import json
 from urllib.parse import urlparse
 
 # --- Configurações --- #
-API_BASE_URL = "http://elon.local:3000/"
+API_BASE_URL = "https://loom-backend-api.onrender.com"
 DOWNLOAD_DIR = "worker_jobs"
 
 # --- Funções de Lógica --- #
