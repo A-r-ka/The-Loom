@@ -68,7 +68,10 @@ export async function POST(request: Request, context: any) {
     // Gerar slug através da rota /claim
     let slug = null;
     try {
-      const claimResponse = await fetch(`/api/projects/${id}/claim`, {
+      const host = request.headers.get('host');
+      const protocol = host?.startsWith('localhost') ? 'http' : 'https';
+      const baseUrl = `${protocol}://${host}`;
+      const claimResponse = await fetch(`${baseUrl}/api/projects/${id}/claim`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
