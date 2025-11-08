@@ -7,6 +7,7 @@ const config: Config = {
   title: 'The Loom',
   tagline: 'Decentralized GPU Compute Marketplace',
   favicon: 'img/favicon.ico',
+  deploymentBranch: 'gh-pages',
 
   // URL do seu site (GitHub Pages ou domínio customizado)
   url: 'https://a-r-ka.github.io',
