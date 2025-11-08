@@ -647,6 +647,29 @@
   cursor: not-allowed;
 }
 
+.btn-approve-project {
+  background: #28a745;
+  color: white;
+  border: none;
+  padding: 0.75rem 1.5rem;
+  border-radius: 8px;
+  font-family: 'Montserrat', sans-serif;
+  font-weight: 600;
+  font-size: 0.95rem;
+  cursor: pointer;
+  transition: all 0.2s;
+}
+
+.btn-approve-project:hover:not(:disabled) {
+  background: #218838;
+  transform: translateY(-1px);
+}
+
+.btn-approve-project:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
+
 .btn-close-modal {
   background: #2a2a2a;
   color: var(--text-primary);

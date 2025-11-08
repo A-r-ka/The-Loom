@@ -1,15 +1,18 @@
 "use client";
 
 import React, { useState } from 'react';
-import { useAccount } from 'wagmi';
+import { useAccount, useWalletClient } from 'wagmi';
 import { CustomConnectButton } from '../components/ConnectButton';
 import Link from 'next/link';
 import MainSection from '../components/MainSection';
 import '../styles/my-jobs.css';
 import '../styles/home.css';
 
+const backendUrl = "http://elon.local:3001";
+
 export default function MyJobsPage() {
   const { isConnected, address } = useAccount();
+  const { data: walletClient } = useWalletClient();
   const [activeTab, setActiveTab] = useState('all');
   const [sidebarOpen, setSidebarOpen] = useState(false);
 
@@ -21,6 +24,7 @@ export default function MyJobsPage() {
   // Modal state
   const [selectedProject, setSelectedProject] = useState<any | null>(null);
   const [deleting, setDeleting] = useState(false);
+  const [approving, setApproving] = useState(false);
 
   React.useEffect(() => {
     let mounted = true;
@@ -137,6 +141,46 @@ export default function MyJobsPage() {
         </main>
       </div>
     );
+  }
+
+  const handleApproveJob = async () => {
+    if (!selectedProject) return;
+
+    setApproving(true);
+    try {
+      const res = await fetch(`${backendUrl}/api/jobs/${selectedProject.transaction_hash}/prepare-action`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ action: 'approve' })
+      });
+
+      if (!res.ok) throw new Error('Erro ao aprovar projeto');
+
+      const txDetails = await res.json();
+      const txHash = await walletClient?.sendTransaction({
+        to: txDetails.to,
+        data: txDetails.data,
+      });
+
+      if (!txHash) throw new Error('Erro ao enviar transação');
+
+
+      const delRes = await fetch(`/api/projects/${selectedProject.id}`, {
+        method: 'DELETE',
+      });
+
+      if (!delRes.ok) throw new Error('Erro ao deletar projeto');
+
+      // Update local state
+      setProjects(prev => prev.filter(p => p.id !== selectedProject.id));
+      setSelectedProject(null);
+      alert('Projeto aprovado com sucesso!');
+    } catch (err: any) {
+      console.error('Error approving project:', err);
+      alert(err.message || 'Erro ao aprovar projeto');
+    } finally {
+      setApproving(false);
+    }
   }
 
   return (
@@ -420,13 +464,23 @@ export default function MyJobsPage() {
             </div>
 
             <div className="modal-footer">
-              <button 
-                className="btn-delete-project"
-                onClick={handleDeleteProject}
-                disabled={deleting}
-              >
-                {deleting ? 'Deleting...' : 'Delete Project'}
-              </button>
+              {selectedProject.status === 'COMPLETED' ? (
+                <button 
+                  className="btn-approve-project"
+                  onClick={handleApproveJob}
+                  disabled={approving}
+                >
+                  {approving ? 'Approving...' : 'Approve Job'}
+                </button>
+              ) : (
+                <button 
+                  className="btn-delete-project"
+                  onClick={handleDeleteProject}
+                  disabled={deleting}
+                >
+                  {deleting ? 'Deleting...' : 'Delete Project'}
+                </button>
+              )}
               <button 
                 className="btn-close-modal"
                 onClick={() => setSelectedProject(null)}

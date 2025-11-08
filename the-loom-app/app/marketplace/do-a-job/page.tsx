@@ -4,14 +4,15 @@ import React, { useState, useEffect } from 'react';
 import MainSection from '../../components/MainSection';
 import '../../styles/do-a-job.css';
 import '../../styles/home.css';
-import { useSearchParams } from 'next/navigation';
+import { useSearchParams, useRouter } from 'next/navigation';
 import { useAccount, useWalletClient } from 'wagmi';
 import Link from 'next/link';
 
-const backendUrl = "http://elon.local:3002";
+const backendUrl = "https://loom-backend-api.onrender.com";
 
 export default function DoAJobPage() {
   const search = useSearchParams();
+  const router = useRouter();
   const job = search.get('job');
   const initialJobData = job ? JSON.parse(job as string) : null;
   const { address } = useAccount();
@@ -28,6 +29,9 @@ export default function DoAJobPage() {
   const [generatedSlug, setGeneratedSlug] = useState<string | null>(null);
   const [currentSlug, setCurrentSlug] = useState<string | null>(null);
   const [loadingSlug, setLoadingSlug] = useState(false);
+  
+  // Complete job state
+  const [checkingStatus, setCheckingStatus] = useState(false);
 
   // Check if the current user is the job creator
   const isMyJob = (currentJobData && address && 
@@ -189,12 +193,69 @@ export default function DoAJobPage() {
     }
   };
 
-  const handleCompleteJob = () => {
-    // TODO: Implement complete job logic
-    alert('Funcionalidade de conclusão será implementada');
-  };
+  const handleCompleteJob = async () => {
+    if (!projectData?.id) {
+      alert('Erro: ID do projeto não encontrado');
+      return;
+    }
 
-  return (
+    setCheckingStatus(true);
+
+    try {
+      // Buscar o status atual do projeto no banco de dados
+      const response = await fetch(`/api/projects/${projectData.id}`);
+      
+      if (!response.ok) {
+        throw new Error('Erro ao buscar status do projeto');
+      }
+
+      const data = await response.json();
+      
+      if (!data.success || !data.project) {
+        throw new Error('Projeto não encontrado');
+      }
+
+      // Verificar se o status é COMPLETED
+      if (data.project.status !== 'COMPLETED') {
+        // Mostrar alert informando que o job não está completo
+        alert('Job ainda não foi completado, termine os passos no app desktop');
+        setCheckingStatus(false);
+        return;
+      }
+
+      const backendResponse = await fetch(`${backendUrl}/api/jobs/${projectData.transaction_hash}/prepare-action`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({ action: 'submit', resultUrl: "Funcionou amigão tá de boa" }),
+      });
+      
+      if (!backendResponse.ok) {
+        const errorData = await backendResponse.json();
+        throw new Error(errorData.message || 'Erro ao preparar a transação de aceitação');
+      }
+      
+      const txDetails = await backendResponse.json();
+      console.log("1");
+      const txHash = await walletClient?.sendTransaction({
+        to: txDetails.to,
+        data: txDetails.data,
+      });
+      console.log("2", txHash);
+
+      alert('Parabéns! Você completou o job. Aguarde a aprovação e o pagamento será enviado automaticamente.');
+      
+      // Redirecionar para a página principal
+      router.push('/');
+      
+    } catch (error: any) {
+      console.error('Erro ao verificar status:', error);
+      alert(error.message || 'Erro ao verificar status do job');
+    } finally {
+      setCheckingStatus(false);
+    }
+  };  return (
     <div className="do-a-job-page">
       <MainSection />
       
@@ -373,8 +434,12 @@ export default function DoAJobPage() {
               Accept Job
             </button>
           ) : isAcceptedByMe ? (
-            <button className="btn-primary" onClick={handleCompleteJob}>
-              Complete Job
+            <button 
+              className="btn-primary" 
+              onClick={handleCompleteJob}
+              disabled={checkingStatus}
+            >
+              {checkingStatus ? 'Checking status...' : 'Complete Job'}
             </button>
           ) : isJobAccepted ? (
             <div className="job-taken-message">

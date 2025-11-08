@@ -8,7 +8,7 @@ import '../../styles/home.css';
 import { useAccount, useWalletClient } from 'wagmi';
 import { walletConnect } from 'wagmi/connectors';
 
-const backendAPI = "http://elon.local:3002"; // Adjust as needed
+const backendAPI = "https://loom-backend-api.onrender.com"; // Adjust as needed
 
 export default function CreateAJobPage() {
   const router = useRouter();

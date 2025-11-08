@@ -9,7 +9,7 @@ import json
 from urllib.parse import urlparse
 
 # --- Configurações --- #
-API_BASE_URL = "http://elon.local:3001"
+API_BASE_URL = "http://elon.local:3000/"
 DOWNLOAD_DIR = "worker_jobs"
 
 # --- Funções de Lógica --- #
@@ -21,7 +21,7 @@ def fetch_job_data(slug, ui_elements):
     
     try:
         # A URL agora aponta para a nova rota de consumo de slug
-        response = requests.get(f"{API_BASE_URL}/jobs/claim/{slug}")
+        response = requests.get(f"{API_BASE_URL}api/jobs/claim/{slug}")
         response.raise_for_status() # Lança erro para respostas 4xx/5xx
         
         data = response.json()
@@ -39,6 +39,7 @@ def fetch_job_data(slug, ui_elements):
         if e.response is not None and e.response.status_code == 404:
             log_area.log("Erro: Slug inválido ou expirado.", "error")
             messagebox.showerror("Erro 404", "Slug inválido ou expirado. Peça um novo slug.")
+            print(e.response.text)
         else:
             log_area.log(f"Erro de conexão: {e}", "error")
             messagebox.showerror("Erro de Conexão", f"Não foi possível conectar à API. Verifique se o servidor está rodando.\n\n{e}")
@@ -79,15 +80,15 @@ def start_job_execution(project_id, project_data, ui_elements):
         os.makedirs(job_dir, exist_ok=True)
         log_area.log(f"Diretório de trabalho criado em: {job_dir}")
 
-        script_url = f"http://elon.local:3001{project_data['script_path']}"
-        dataset_url = project_data['cloud_link']
+        script_url = f"{API_BASE_URL}{project_data['script_path']}"
+        dataset_url = f"{API_BASE_URL}{project_data['cloud_link']}"
 
         local_script_path = download_file(script_url, job_dir, log_area)
         download_file(dataset_url, job_dir, log_area)
 
         # 3. Executar o script com subprocess
         log_area.log(f"Executando script: python3 {local_script_path}", "cmd")
-        execute_script(local_script_path, job_dir, log_area)
+        execute_script(f"{local_script_path.split("/")[-1]}", f"./{job_dir}", log_area)
 
         # 4. Atualizar status para COMPLETED
         log_area.log("Trabalho concluído com sucesso!", "success")
@@ -107,7 +108,7 @@ def start_job_execution(project_id, project_data, ui_elements):
 def update_status(project_id, status, log_area):
     """Atualiza o status do projeto via API PUT."""
     try:
-        response = requests.put(f"{API_BASE_URL}/projects/{project_id}", json={"status": status})
+        response = requests.put(f"{API_BASE_URL}api/projects/{project_id}", json={"status": status})
         response.raise_for_status()
         log_area.log(f"Status atualizado para: {status}")
     except requests.exceptions.RequestException as e:
@@ -137,6 +138,7 @@ def download_file(url, dest_folder, log_area):
         raise Exception(f"Falha ao baixar o arquivo {url}. Erro: {e}")
 
 def execute_script(script_path, work_dir, log_area):
+    print("Executando script: args =", ["python3", script_path], "cwd =", work_dir)
     """Executa um script e transmite seu output para a área de log."""
     process = subprocess.Popen(
         ["python3", script_path],
