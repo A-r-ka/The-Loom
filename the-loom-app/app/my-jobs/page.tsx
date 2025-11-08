@@ -103,6 +103,25 @@ export default function MyJobsPage() {
     return colors[status] || '#666';
   };
 
+  // Filter projects based on active tab
+  const filteredProjects = projects.filter((project) => {
+    if (activeTab === 'all') return true;
+    
+    if (activeTab === 'active') {
+      return project.status === 'PENDING';
+    }
+    
+    if (activeTab === 'complete') {
+      return project.status === 'COMPLETED';
+    }
+    
+    if (activeTab === 'pending') {
+      return project.status === 'WORKING';
+    }
+    
+    return true;
+  });
+
   // If user is not connected, show a friendly CTA to connect the wallet
   if (!isConnected) {
     return (
@@ -172,7 +191,9 @@ export default function MyJobsPage() {
         {/* Main Content */}
         <main className="my-jobs-main">
           <div className="projects-header">
-            <h1 className="projects-title">Projects</h1>
+            <h1 className="projects-title">
+              Projects {filteredProjects.length !== projects.length && `(${filteredProjects.length} of ${projects.length})`}
+            </h1>
 
             <div className="projects-controls">
               {/* Tabs */}
@@ -222,8 +243,19 @@ export default function MyJobsPage() {
                   <p>You haven't created any projects with this wallet yet.</p>
                   <Link href="/my-jobs/create-a-job" className="create-job-btn">Create Job</Link>
               </div>
+            ) : filteredProjects.length === 0 ? (
+              <div className="no-projects-cta">
+                  <h3>No {activeTab} projects found!</h3>
+                  <p>You don't have any projects with this status.</p>
+                  <button 
+                    onClick={() => setActiveTab('all')}
+                    className="create-job-btn"
+                  >
+                    View All Projects
+                  </button>
+              </div>
             ) : (
-              projects.map((project) => (
+              filteredProjects.map((project) => (
                 <div 
                   key={project.id} 
                   className="project-card"

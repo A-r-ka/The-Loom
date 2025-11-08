@@ -1,73 +1,21 @@
 'use client';
 
-import * as React from 'react';
-import {
-  RainbowKitProvider,
-  getDefaultConfig,
-  darkTheme,
-} from '@rainbow-me/rainbowkit';
-import {
-  argentWallet,
-  trustWallet,
-  ledgerWallet,
-  metaMaskWallet
-} from '@rainbow-me/rainbowkit/wallets'; // Importar as carteiras que queremos adicionar
-import { WagmiProvider } from 'wagmi';
-import {
-  mainnet,
-  polygon,
-  optimism,
-  arbitrum,
-  base,
-  sepolia,
-  scrollSepolia, // Rede da Scroll!
-} from '@wagmi/core/chains';
+import React from 'react';
+import { WagmiProvider, cookieToInitialState } from 'wagmi';
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
-
-// Obtenha o Project ID no WalletConnect Cloud (https://cloud.walletconnect.com)
-const projectId = 'c8aa9e6ff39993515a1f075a38ac75ef'; // NÃO SE ESQUEÇA DE TROCAR
-
-// ESTA É A FORMA CORRETA E SIMPLIFICADA
-const config = getDefaultConfig({
-  appName: 'The Loom',
-  projectId: projectId,
-  
-  // O `getDefaultConfig` já inclui as carteiras padrão (MetaMask, WalletConnect, Rainbow, Coinbase Wallet).
-  // A propriedade 'wallets' abaixo serve para *adicionar* mais carteiras a essa lista.
-  wallets: [
-    {
-      groupName: 'Suggested', // Um grupo extra que você quer mostrar
-      wallets: [argentWallet, trustWallet, ledgerWallet, metaMaskWallet],
-    },
-  ],
-  
-  chains: [
-    scrollSepolia, // Rede principal do seu projeto
-    sepolia,
-    mainnet,
-    polygon,
-    optimism,
-    arbitrum,
-    base,
-  ],
-  ssr: true,
-});
+import { config } from '../lib/wagmiConfig';
+import { headers } from 'next/headers';
+import { RainbowKitProvider } from '@rainbow-me/rainbowkit';
 
 const queryClient = new QueryClient();
 
 export function Providers({ children }: { children: React.ReactNode }) {
+  const initialState = cookieToInitialState(config, headers()?.get('cookie'));
+
   return (
-    // O config simplificado vai direto no WagmiProvider
-    <WagmiProvider config={config}> 
+    <WagmiProvider config={config} initialState={initialState}>
       <QueryClientProvider client={queryClient}>
-        <RainbowKitProvider
-          theme={darkTheme({
-            accentColor: "#fff",
-            accentColorForeground: "#2f2e2eff"
-          })}
-        >
-          {children}
-        </RainbowKitProvider>
+        <RainbowKitProvider>{children}</RainbowKitProvider>
       </QueryClientProvider>
     </WagmiProvider>
   );

@@ -8,7 +8,7 @@ dotenv.config();
 
 // Define as variáveis de ambiente com checagem de tipo (opcional, mas bom)
 const SCROLL_SEPOLIA_RPC_URL: string = process.env.SCROLL_SEPOLIA_RPC_URL || "https://sepolia-rpc.scroll.io/";
-const PRIVATE_KEY: string = process.env.SCROLL_SEPOLIA_PRIVATE_KEY || "";
+const PRIVATE_KEY: string = process.env.PRIVATE_KEY || "";
 const ETHERSCAN_API_KEY: string = process.env.ETHERSCAN_API_KEY || "";
 
 // Define a configuração do Hardhat
@@ -25,16 +25,13 @@ const config: HardhatUserConfig = {
     },
   },
   etherscan: {
-    apiKey: {
-      scrollSepolia: ETHERSCAN_API_KEY,
-    },
+    apiKey: ETHERSCAN_API_KEY,
     customChains: [
       {
         network: "scrollSepolia",
         chainId: 534351,
         urls: {
-          // API V2 do Etherscan COM o chainid como parâmetro de query
-          apiURL: "https://api.etherscan.io/v2/api?chainid=534351",
+          apiURL: "https://api-sepolia.scrollscan.com/api",
           browserURL: "https://sepolia.scrollscan.com/",
         },
       },

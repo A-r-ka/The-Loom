@@ -11,14 +11,16 @@
     "reset-db": "rm -f the-loom.db && echo 'Database resetado! Dados fictícios serão recriados.'"
   },
   "dependencies": {
+    "@rainbow-me/rainbowkit": "^2.2.9",
+    "@tanstack/react-query": "^5.90.7",
+    "dotenv": "^17.2.3",
+    "ethers": "^6.15.0",
     "next": "14.0.0",
     "react": "18.2.0",
     "react-dom": "18.2.0",
     "sqlite3": "^5.1.6",
-    "@rainbow-me/rainbowkit": "^2.0.0",
-    "@tanstack/react-query": "^5.0.0",
-    "wagmi": "^2.0.0",
-    "viem": "^2.0.0"
+    "viem": "^2.38.6",
+    "wagmi": "^2.19.2"
   },
   "devDependencies": {
     "@types/node": "20.0.0",

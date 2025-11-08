@@ -17,7 +17,7 @@ interface Project {
   cloud_link?: string;
   script_path?: string;
   external_links?: string; // Vem como string do DB
-  attachment_info?: string;
+  transaction_hash?: string;
   // hardware / software requirements (optionals)
   cpu?: number;
   gpu?: number;
@@ -70,14 +70,14 @@ export async function POST(request: Request) {
     
     const title = data.get('title') as string;
     const description = data.get('description') as string;
-    const type = data.get('type') as 'AI' | '3D Rendering' | 'Data Processing' | 'Video Processing';
+    const type = data.get('type') as 'AI' | '3D Rendering' | 'Data Simulation' | 'Video Processing';
     const price = parseFloat(data.get('price') as string);
     const wallet_address = data.get('wallet_address') as string;
     const cloud_link = data.get('cloud_link') as string;
     
     const externalLinksStr = data.get('external_links');
     const external_links = externalLinksStr ? JSON.parse(externalLinksStr as string) : [];
-    const attachment_info = data.get('attachment_info') as string;
+    const transaction_hash = data.get('transaction_hash') as string;
     
     // Hardware requirements
     const cpu = !!data.get('cpu') ? 1 : 0;
@@ -97,14 +97,15 @@ export async function POST(request: Request) {
     const zbrush = !!data.get('zbrush') ? 1 : 0;
     
     const file = data.get('script_file') as File | null;
+    const scriptPathFromForm = data.get('script_path') as string | null;
 
     // Validações
     if (!title || !type || !price) {
       return NextResponse.json({ success: false, error: 'Campos obrigatórios faltando' }, { status: 400 });
     }
 
-    if (type !== 'AI' && type !== '3D Rendering' && type !== 'Data Processing' && type !== 'Video Processing') {
-      return NextResponse.json({ success: false, error: 'Tipo inválido. Use "AI", "3D Rendering", "Data Processing" ou "Video Processing"' }, { status: 400 });
+    if (type !== 'AI' && type !== '3D Rendering' && type !== 'Data Simulation' && type !== 'Video Processing') {
+      return NextResponse.json({ success: false, error: 'Tipo inválido. Use "AI", "3D Rendering", "Data Simulation" ou "Video Processing"' }, { status: 400 });
     }
 
     if (wallet_address && !isValidWalletAddress(wallet_address)) {
@@ -113,8 +114,12 @@ export async function POST(request: Request) {
 
     let scriptPath: string | null = null;
 
-    // Processar arquivo
-    if (file) {
+    // Prioridade: se houver URL do script no formulário, use ela
+    if (scriptPathFromForm) {
+      scriptPath = scriptPathFromForm;
+    } 
+    // Caso contrário, processar arquivo (backward compatibility)
+    else if (file) {
       const uploadsDir = path.join(process.cwd(), 'public', 'uploads');
       
       if (!existsSync(uploadsDir)) {
@@ -138,7 +143,7 @@ export async function POST(request: Request) {
       `INSERT INTO projects (
         title, description, type, price, wallet_address,
         status, progress, created_at, cloud_link, script_path,
-        external_links, attachment_info,
+        external_links, transaction_hash,
         cpu, gpu, ram, vram,
         vray, openfoam, bullet, python, compileProject, blender, octane, autoDesk3DMax, zbrush
       ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`,
@@ -154,7 +159,7 @@ export async function POST(request: Request) {
         cloud_link || null,
         scriptPath,
         JSON.stringify(external_links),
-        attachment_info || null,
+        transaction_hash || null,
         cpu,
         gpu,
         ram,

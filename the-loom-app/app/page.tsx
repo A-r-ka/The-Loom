@@ -1,8 +1,13 @@
 "use client";
 
 import React from "react";
+import Image from "next/image";
 import './styles/home.css';
 import MainSection from './components/MainSection';
+
+const IMG = (img: string) => {
+  return `/${img}.png`;
+};
 
 export default function Home() {
   return (
@@ -89,25 +94,25 @@ export default function Home() {
           <h3 className="sponsors-title">Sponsors</h3>
           <div className="sponsors-grid">
             <div className="sponsor-logo">
-              <img src="./styles/img/chainlink.svg" alt="Chainlink" />
+              <Image src={IMG('chainlink')} width={100} height={100} alt="Chainlink" />
             </div>
             <div className="sponsor-logo">
-              <img src="./styles/img/fhenix.svg" alt="Fhenix" />
+              <Image src={IMG('fhenix')} width={100} height={100} alt="Fhenix" />
             </div>
             <div className="sponsor-logo">
-              <img src="./styles/img/arbitrum.svg" alt="Arbitrum" />
+              <Image src={IMG('arbitrum')} width={100} height={100} alt="Arbitrum" />
             </div>
             <div className="sponsor-logo">
-              <img src="./styles/img/ETH.Build.svg" alt="ETH.Build" />
+              <Image src={IMG('ETH.Build')} width={100} height={100} alt="ETH.Build" />
             </div>
             <div className="sponsor-logo">
-              <img src="./styles/img/flow.svg" alt="Flow" />
+              <Image src={IMG('flow')} width={100} height={100} alt="Flow" />
             </div>
             <div className="sponsor-logo">
-              <img src="./styles/img/zama.svg" alt="ZAMA" />
+              <Image src={IMG('zama')} width={100} height={100} alt="ZAMA" />
             </div>
             <div className="sponsor-logo">
-              <img src="./styles/img/base.svg" alt="Base" />
+              <Image src={IMG('base')} width={100} height={100} alt="Base" />
             </div>
           </div>
         </section>

@@ -5,14 +5,17 @@ import MainSection from '../../components/MainSection';
 import '../../styles/do-a-job.css';
 import '../../styles/home.css';
 import { useSearchParams } from 'next/navigation';
-import { useAccount } from 'wagmi';
+import { useAccount, useWalletClient } from 'wagmi';
 import Link from 'next/link';
+
+const backendUrl = "http://elon.local:3002";
 
 export default function DoAJobPage() {
   const search = useSearchParams();
   const job = search.get('job');
   const initialJobData = job ? JSON.parse(job as string) : null;
   const { address } = useAccount();
+  const { data: walletClient } = useWalletClient();
 
   // Use local state to track the current job data
   const [currentJobData, setCurrentJobData] = useState(initialJobData);
@@ -124,6 +127,25 @@ export default function DoAJobPage() {
     setAcceptError(null);
 
     try {
+      const backendResponse = await fetch(`${backendUrl}/api/jobs/${projectData.transaction_hash}/prepare-action`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({ action: 'accept' }),
+      });
+      
+      if (!backendResponse.ok) {
+        const errorData = await backendResponse.json();
+        throw new Error(errorData.message || 'Erro ao preparar a transação de aceitação');
+      }
+      
+      const txDetails = await backendResponse.json();
+      const txHash = await walletClient?.sendTransaction({
+        to: txDetails.to,
+        data: txDetails.data,
+      });
+
       const res = await fetch(`/api/projects/${projectData.id}/accept`, {
         method: 'POST',
         headers: {

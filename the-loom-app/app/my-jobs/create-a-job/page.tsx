@@ -5,7 +5,10 @@ import { useRouter } from 'next/navigation';
 import MainSection from '../../components/MainSection';
 import '../../styles/create-a-job.css';
 import '../../styles/home.css';
-import { useAccount } from 'wagmi';
+import { useAccount, useWalletClient } from 'wagmi';
+import { walletConnect } from 'wagmi/connectors';
+
+
 
 export default function CreateAJobPage() {
   const router = useRouter();
@@ -41,7 +44,7 @@ export default function CreateAJobPage() {
   const [budgetAssets, setBudgetAssets] = useState({
     budget: '',
     assetsLink: '',
-    scriptFile: null as File | null,
+    scriptUrl: '',
   });
 
   const jobTypes = [
@@ -96,16 +99,6 @@ export default function CreateAJobPage() {
     }));
   };
 
-  const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const file = e.target.files?.[0];
-    if (file) {
-      setBudgetAssets(prev => ({
-        ...prev,
-        scriptFile: file
-      }));
-    }
-  };
-
   const handleNext = () => {
     if (currentStep === 1 && selectedJobType) {
       setCurrentStep(2);
@@ -127,6 +120,7 @@ export default function CreateAJobPage() {
   };
 
   const { address, isConnected } = useAccount();
+  const { data: WalletClient } = useWalletClient();
   const [submitting, setSubmitting] = useState(false);
   const [submitError, setSubmitError] = useState<string | null>(null);
 
@@ -139,7 +133,7 @@ export default function CreateAJobPage() {
       case '3D':
         return '3D Rendering';
       case 'data':
-        return 'Data Processing';
+        return 'Data Simulation';
       case 'video':
         return 'Video Processing';
       default:
@@ -165,9 +159,6 @@ export default function CreateAJobPage() {
       const external = budgetAssets.assetsLink ? [budgetAssets.assetsLink] : [];
       fd.append('external_links', JSON.stringify(external));
 
-      // attachment_info left blank for now
-      fd.append('attachment_info', '');
-
       // Hardware
       if (hardwareRequirements.cpu) fd.append('cpu', '1');
       if (hardwareRequirements.gpu) fd.append('gpu', '1');
@@ -178,6 +169,38 @@ export default function CreateAJobPage() {
       Object.entries(softwareRequirements).forEach(([key, val]) => {
         if (val) fd.append(key, '1');
       });
+
+      // Script URL
+      if (budgetAssets.scriptUrl) {
+        fd.append('script_path', budgetAssets.scriptUrl);
+      }
+
+      const backResponse = await fetch('/api/jobs/prepare-post', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          dataUrl: budgetAssets.assetsLink,
+          scriptUrl: budgetAssets.scriptUrl,
+          usdAmount: budgetAssets.budget
+        })
+      });
+      const txDetails = await backResponse.json();
+
+      if (!backResponse.ok) {
+        throw new Error("Wasn't able to prepare the job on blockchain");
+      }
+
+      const txHash = await WalletClient?.sendTransaction({
+        to: txDetails.to,
+        value: BigInt(txDetails.value),
+        data: txDetails.data
+      });
+
+      if (!txHash) {
+        throw new Error("Wasn't able to send the transaction from wallet");
+      }
+
+      fd.append('transaction_hash', txHash);
 
       const res = await fetch('/api/projects', {
         method: 'POST',
@@ -190,6 +213,7 @@ export default function CreateAJobPage() {
         setSubmitting(false);
         return;
       }
+
 
       // success -> redirect to my-jobs
       router.push('/my-jobs');
@@ -537,22 +561,17 @@ export default function CreateAJobPage() {
               Note: This amount will be locked in an escrow smart contract. Your wallet will prompt for confirmation upon submission
             </p>
 
-            {/* Project Script File */}
-            <div className="file-upload-section">
-              <h2 className="section-subtitle">Project Script File</h2>
-              <label htmlFor="script-file" className="file-upload-btn">
-                Click to Select File
-              </label>
+            {/* Project Script URL */}
+            <div className="script-url-section">
+              <h2 className="section-subtitle">Project Script URL</h2>
               <input
-                type="file"
-                id="script-file"
-                className="file-upload-input"
-                onChange={handleFileChange}
-                accept=".py,.js,.sh,.txt"
+                type="text"
+                name="scriptUrl"
+                value={budgetAssets.scriptUrl}
+                onChange={handleBudgetAssetsChange}
+                placeholder="Enter the URL of your script file"
+                className="assets-input"
               />
-              {budgetAssets.scriptFile && (
-                <p className="file-name">Selected: {budgetAssets.scriptFile.name}</p>
-              )}
             </div>
 
             <div className="step-navigation">
@@ -565,7 +584,7 @@ export default function CreateAJobPage() {
               <button 
                 className="btn-submit"
                 onClick={handleNext}
-                disabled={!budgetAssets.budget || !budgetAssets.assetsLink || submitting}
+                disabled={!budgetAssets.budget || !budgetAssets.assetsLink || !budgetAssets.scriptUrl || submitting}
               >
                 Review & Submit
               </button>
@@ -673,9 +692,9 @@ export default function CreateAJobPage() {
                 <span className="review-label">Budget</span>
                 <span className="review-value">${budgetAssets.budget} USD</span>
 
-                <span className="review-label">Script</span>
+                <span className="review-label">Script URL</span>
                 <span className="review-value">
-                  {budgetAssets.scriptFile ? budgetAssets.scriptFile.name : '(No file)'}
+                  {budgetAssets.scriptUrl || '(No URL provided)'}
                 </span>
 
                 <span className="review-label">Assets llink</span>
