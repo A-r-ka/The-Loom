@@ -9,7 +9,7 @@ import json
 from urllib.parse import urlparse
 
 # --- Configurações --- #
-API_BASE_URL = "https://loom-backend-api.onrender.com"
+API_BASE_URL = "https://the-loom-pqy4.onrender.com/"
 DOWNLOAD_DIR = "worker_jobs"
 
 # --- Funções de Lógica --- #
